@@ -95,11 +95,11 @@ Mientras `APPS_SCRIPT_URL = ""`, la aplicación muestra un aviso claro y trabaja
 2. En GitHub, entra a `Settings → Pages`.
 3. En `Build and deployment`, selecciona:
    - Source: `Deploy from a branch`.
-   - Branch: `main` después de fusionar el PR.
-   - Folder: `/frontend`.
+   - Branch: `main`.
+   - Folder: `/(raíz)`.
 4. Guarda los cambios.
 
-Las rutas del frontend son relativas para que funcionen en GitHub Pages.
+El archivo [index.html](index.html) de la raiz redirige automaticamente a [frontend/index.html](frontend/index.html), que contiene la aplicacion real.
 
 ## Seguridad
 
