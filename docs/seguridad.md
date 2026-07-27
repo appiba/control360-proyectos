@@ -27,14 +27,16 @@ La credencial inicial del propietario está preconfigurada en el backend mediant
 
 La clave real no se guarda en texto en GitHub Pages ni en los archivos del frontend. Si se rota la clave en el futuro, puede usarse `PropertiesService` con `CONTROL360_SUPERADMIN_EMAIL` y `CONTROL360_SUPERADMIN_TEMP_PASSWORD`; al ejecutar `configurarSuperadminInicial()`, la propiedad temporal se elimina y queda solo el hash.
 
-Fase 2 debe implementar:
+Fase 2 implementa:
 
 - Invitaciones por correo.
-- Confirmación de correo.
+- Confirmación/activación de usuario invitado.
 - Vencimiento de invitaciones.
 - Validación de sesión.
 - Permisos por proyecto.
 - Revocación de acceso.
+
+Cada invitación usa un código de activación. En las invitaciones nuevas se guarda el hash del código, no el código visible. El código se muestra una sola vez al administrador para entregarlo al socio correcto.
 
 ## Apps Script
 

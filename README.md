@@ -2,14 +2,19 @@
 
 CONTROL360 es una aplicación web privada para gestión patrimonial, financiera y operativa de proyectos personales: eventos, negocios, inversiones, activos, compras de empresas, oportunidades, socios, ingresos, gastos, documentos e informes.
 
-Esta primera versión implementa la Fase 1: frontend estático compatible con GitHub Pages, backend inicial para Google Apps Script y documentación base para continuar sin romper la arquitectura.
+Esta versión avanza a Fase 2: frontend estático compatible con GitHub Pages, backend Google Apps Script conectado a Google Sheets, login real del propietario, sesiones, invitaciones de socios y permisos por proyecto.
 
-## Estado de la Fase 1
+## Estado de la Fase 2
 
 Funcional hoy:
 
 - Dashboard oscuro responsive con KPIs financieros y gráficos demo.
 - Pantalla de login para superadministrador único, validada por Apps Script.
+- Activación de socios por invitación con código privado y clave propia.
+- Roles y permisos iniciales: `Superadmin`, `AdministradorProyecto`, `Editor`, `Socio` e `Invitado`.
+- Pantalla de Usuarios para crear invitaciones, revisar usuarios, ver accesos y revocar accesos por proyecto.
+- Backend con validación de sesión/token en acciones privadas.
+- Filtrado de proyectos, dashboard, ingresos, gastos, socios, documentos, informes, compras e historial según permisos.
 - Navegación lateral para todos los módulos solicitados.
 - Pantalla de proyectos con creación, listado, estados, tipos y detalle básico.
 - Módulos visuales de ingresos, gastos, socios, compras, proveedores, documentos, historial y configuración.
@@ -28,8 +33,8 @@ Configuración actual:
 
 Pendiente de configuración manual:
 
-- Cargar los archivos de [apps-script](apps-script) dentro del proyecto de Google Apps Script.
-- Ejecutar `setupDatabase()` desde Apps Script.
+- Volver a cargar los archivos de [apps-script](apps-script) dentro del proyecto de Google Apps Script.
+- Ejecutar `setupDatabase()` desde Apps Script para agregar columnas nuevas de Fase 2 sin borrar datos.
 - Volver a probar `healthCheck` en el endpoint `/exec`.
 - Activar GitHub Pages desde la carpeta `/frontend`.
 - Conceder permisos de escritura al repo si se desea que Codex pueda empujar la rama y abrir el PR automáticamente.
@@ -78,14 +83,14 @@ Las pruebas actuales verifican cálculos financieros críticos, validación de p
 2. Copia los archivos de la carpeta [apps-script](apps-script) al proyecto.
 3. Verifica que `CONTROL360_CONFIG.SPREADSHEET_ID` apunte a:
    `1zi4nLceMyUTRLdDftHF2hWWbCxAL42EnfcNu56u2d_Q`
-4. Ejecuta manualmente `setupDatabase()` una vez y concede permisos.
+4. Ejecuta manualmente `setupDatabase()` una vez y concede permisos. En Fase 2 esto agrega columnas nuevas a `Usuarios` e `Invitaciones` sin eliminar información existente.
 5. Despliega como aplicación web:
    - Ejecutar como: propietario.
    - Acceso: solo usuarios autorizados, o el alcance privado que definas.
 6. Copia la URL terminada en `/exec`.
 7. Si el despliegue cambia, actualiza `APPS_SCRIPT_URL` dentro de [frontend/js/config.js](frontend/js/config.js).
 
-La credencial inicial del propietario ya queda validada por hash en Apps Script. Si en el futuro quieres rotarla sin cambiar código, puedes configurar `CONTROL360_SUPERADMIN_EMAIL` y `CONTROL360_SUPERADMIN_TEMP_PASSWORD`, ejecutar `configurarSuperadminInicial()` y desplegar una nueva versión.
+La credencial inicial del propietario ya queda validada por hash en Apps Script. Los socios no usan esa clave: se crean desde `Usuarios`, reciben un código de activación y luego definen su propia clave, que también se guarda como hash.
 
 Mientras `APPS_SCRIPT_URL = ""`, la aplicación muestra un aviso claro y trabaja en modo demo local. En esta rama ya está configurada la URL enviada por el propietario.
 

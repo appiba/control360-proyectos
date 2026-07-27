@@ -6,6 +6,8 @@ function agregarSocio_(payload, context) {
     var missing = requireFields_(data, ["proyectoId", "nombre"]);
     if (missing.length) return fail_("Faltan campos obligatorios.", missing);
     if (!findRecordById_("Proyectos", data.proyectoId)) return fail_("Proyecto no encontrado.", ["PROJECT_NOT_FOUND"]);
+    var authError = requireProjectPermission_(context, data.proyectoId, "modificarDatos");
+    if (authError) return authError;
 
     var record = {
       id: uuid_(),
@@ -40,6 +42,10 @@ function agregarSocio_(payload, context) {
 
 function actualizarParticipacion_(payload, context) {
   if (!payload || !payload.id) return fail_("Falta id de socio.", ["REQUIRED:id"]);
+  var partner = findRecordById_("Socios", payload.id);
+  if (!partner) return fail_("Socio no encontrado.", ["PARTNER_NOT_FOUND"]);
+  var authError = requireProjectPermission_(context, partner.proyectoId, "modificarDatos");
+  if (authError) return authError;
   var changes = {
     participacionLegal: toNumber_(payload.participacionLegal),
     participacionEconomica: toNumber_(payload.participacionEconomica),
@@ -47,7 +53,6 @@ function actualizarParticipacion_(payload, context) {
     actualizadoEn: nowIso_()
   };
   var result = updateRecordById_("Socios", payload.id, changes);
-  if (!result) return fail_("Socio no encontrado.", ["PARTNER_NOT_FOUND"]);
   audit_("Socios", "actualizarParticipacion", result.next.proyectoId, result.previous, result.next, context, result.next.nombre);
   return ok_(result.next, "Participación actualizada.");
 }

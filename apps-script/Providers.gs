@@ -1,4 +1,6 @@
 function registrarProveedor_(payload, context) {
+  var authError = requireSystemPermission_(context, "modificarDatos");
+  if (authError) return authError;
   var data = sanitizeRecord_(payload || {});
   var missing = requireFields_(data, ["nombre"]);
   if (missing.length) return fail_("Faltan campos obligatorios.", missing);

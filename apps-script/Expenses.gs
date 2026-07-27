@@ -148,12 +148,18 @@ var CATALOGO_GASTOS_BASE = [
   };
 });
 
-function listarGastos_(payload) {
+function listarGastos_(payload, context) {
+  var authError = requireActiveSession_(context);
+  if (authError) return authError;
   var records = readRecords_("Gastos");
   if (payload && payload.proyectoId) {
+    authError = requireProjectPermission_(context, payload.proyectoId, "verGastos");
+    if (authError) return authError;
     records = records.filter(function (record) {
       return String(record.proyectoId) === String(payload.proyectoId);
     });
+  } else {
+    records = filterByProjectAccess_(records, context, "verGastos");
   }
   return ok_(records, "Gastos obtenidos.");
 }
@@ -166,6 +172,8 @@ function registrarGasto_(payload, context) {
     var missing = requireFields_(data, ["proyectoId", "categoria", "subcategoria", "concepto", "estado"]);
     if (missing.length) return fail_("Faltan campos obligatorios.", missing);
     if (!findRecordById_("Proyectos", data.proyectoId)) return fail_("Proyecto no encontrado.", ["PROJECT_NOT_FOUND"]);
+    var authError = requireProjectPermission_(context, data.proyectoId, "registrarGastos");
+    if (authError) return authError;
 
     var record = {
       id: uuid_(),
@@ -201,12 +209,16 @@ function registrarGasto_(payload, context) {
   }
 }
 
-function obtenerCatalogoGastos_() {
+function obtenerCatalogoGastos_(payload, context) {
+  var authError = requireActiveSession_(context);
+  if (authError) return authError;
   var records = readRecords_("CatalogoGastos");
   return ok_(records, "Catálogo de gastos obtenido.");
 }
 
 function crearConceptoGasto_(payload, context) {
+  var authError = requireSystemPermission_(context, "modificarDatos");
+  if (authError) return authError;
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {

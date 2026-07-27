@@ -1,5 +1,8 @@
-function listarProyectos_(payload) {
+function listarProyectos_(payload, context) {
+  var authError = requireActiveSession_(context);
+  if (authError) return authError;
   var records = readRecords_("Proyectos");
+  records = filterByProjectAccess_(records, context, "verResumen");
   if (payload && payload.estado) {
     records = records.filter(function (record) {
       return String(record.estado) === String(payload.estado);
@@ -13,13 +16,18 @@ function listarProyectos_(payload) {
   return ok_(records, "Proyectos obtenidos.");
 }
 
-function obtenerProyecto_(payload) {
+function obtenerProyecto_(payload, context) {
   if (!payload || !payload.id) return fail_("Falta id de proyecto.", ["REQUIRED:id"]);
   var project = findRecordById_("Proyectos", payload.id);
-  return project ? ok_(project, "Proyecto obtenido.") : fail_("Proyecto no encontrado.", ["PROJECT_NOT_FOUND"]);
+  if (!project) return fail_("Proyecto no encontrado.", ["PROJECT_NOT_FOUND"]);
+  var authError = requireProjectPermission_(context, project.id, "verResumen");
+  if (authError) return authError;
+  return ok_(project, "Proyecto obtenido.");
 }
 
 function crearProyecto_(payload, context) {
+  var authError = requireSystemPermission_(context, "modificarDatos");
+  if (authError) return authError;
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
@@ -70,6 +78,8 @@ function crearProyecto_(payload, context) {
 
 function actualizarProyecto_(payload, context) {
   if (!payload || !payload.id) return fail_("Falta id de proyecto.", ["REQUIRED:id"]);
+  var authError = requireProjectPermission_(context, payload.id, "modificarDatos");
+  if (authError) return authError;
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
@@ -92,6 +102,8 @@ function actualizarProyecto_(payload, context) {
 
 function archivarProyecto_(payload, context) {
   if (!payload || !payload.id) return fail_("Falta id de proyecto.", ["REQUIRED:id"]);
+  var authError = requireProjectPermission_(context, payload.id, "cerrarProyecto");
+  if (authError) return authError;
   return actualizarProyecto_({ id: payload.id, estado: "Archivado" }, context);
 }
 

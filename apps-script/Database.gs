@@ -1,7 +1,7 @@
 var SHEET_SCHEMAS = {
   Configuracion: ["id", "clave", "valor", "descripcion", "actualizadoEn"],
-  Usuarios: ["id", "nombreCompleto", "correo", "telefono", "estado", "correoConfirmado", "creadoEn", "ultimoAcceso", "fechaVencimiento", "notas"],
-  Invitaciones: ["id", "usuarioId", "correo", "codigo", "estado", "proyectoId", "rol", "permisos", "venceEn", "creadoEn", "confirmadoEn"],
+  Usuarios: ["id", "nombreCompleto", "correo", "telefono", "rol", "estado", "correoConfirmado", "passwordHash", "passwordSalt", "passwordRounds", "invitacionId", "creadoEn", "ultimoAcceso", "fechaVencimiento", "notas"],
+  Invitaciones: ["id", "usuarioId", "nombreCompleto", "telefono", "correo", "codigo", "codigoHash", "estado", "proyectoId", "rol", "permisos", "venceEn", "creadoEn", "creadoPor", "enviadoEn", "confirmadoEn", "aceptacionUrl"],
   SolicitudesAcceso: ["id", "usuarioId", "correo", "proyectoId", "estado", "mensaje", "creadoEn", "resueltoEn", "resueltoPor"],
   Proyectos: ["id", "nombre", "tipo", "subtipo", "descripcion", "ciudad", "direccionLugar", "fechaInicio", "fechaEstimadaFin", "estado", "presupuestoInicial", "presupuestoActualizado", "responsable", "propietario", "moneda", "imagenPortada", "nivelRiesgo", "etiquetas", "notas", "creadoEn", "creadoPor", "actualizadoEn", "actualizadoPor"],
   AccesosProyecto: ["id", "usuarioId", "proyectoId", "rol", "permisos", "estado", "fechaInicio", "fechaVencimiento", "creadoEn", "actualizadoEn"],

@@ -2,6 +2,8 @@ function crearCotizacion_(payload, context) {
   var data = sanitizeRecord_(payload || {});
   var missing = requireFields_(data, ["proyectoId", "proveedorId"]);
   if (missing.length) return fail_("Faltan campos obligatorios.", missing);
+  var authError = requireProjectPermission_(context, data.proyectoId, "modificarDatos");
+  if (authError) return authError;
   var record = {
     id: uuid_(),
     proyectoId: data.proyectoId,
@@ -26,11 +28,14 @@ function crearCotizacion_(payload, context) {
   return ok_(record, "Cotización creada.");
 }
 
-function compararCotizaciones_(payload) {
+function compararCotizaciones_(payload, context) {
+  var authError = requireActiveSession_(context);
+  if (authError) return authError;
   var records = readRecords_("Cotizaciones");
   if (payload && payload.necesidadId) {
     records = records.filter(function (item) { return String(item.necesidadId) === String(payload.necesidadId); });
   }
+  records = filterByProjectAccess_(records, context, "verGastos");
   records.sort(function (a, b) {
     return toNumber_(a.valorFinal) - toNumber_(b.valorFinal);
   });
@@ -43,6 +48,8 @@ function compararCotizaciones_(payload) {
 
 function registrarNegociacion_(payload, context) {
   var data = sanitizeRecord_(payload || {});
+  var authError = requireProjectPermission_(context, data.proyectoId || "", "modificarDatos");
+  if (authError) return authError;
   var record = {
     id: uuid_(),
     proyectoId: data.proyectoId || "",

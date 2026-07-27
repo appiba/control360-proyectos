@@ -20,11 +20,22 @@ function audit_(modulo, accion, proyectoId, valorAnterior, valorNuevo, context, 
   }
 }
 
-function obtenerHistorial_(payload) {
+function obtenerHistorial_(payload, context) {
+  var authError = requireActiveSession_(context);
+  if (authError) return authError;
   var records = readRecords_("Historial");
   if (payload && payload.proyectoId) {
+    authError = requireProjectPermission_(context, payload.proyectoId, "verResumen");
+    if (authError) return authError;
     records = records.filter(function (record) {
       return String(record.proyectoId) === String(payload.proyectoId);
+    });
+  } else if (!isSuperadminUser_(context.user)) {
+    var allowedIds = getAccessibleProjectIds_(context, "verResumen") || [];
+    var allowed = {};
+    allowedIds.forEach(function (id) { allowed[id] = true; });
+    records = records.filter(function (record) {
+      return !record.proyectoId || allowed[String(record.proyectoId)];
     });
   }
   return ok_(records, "Historial obtenido.");

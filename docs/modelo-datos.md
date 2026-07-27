@@ -45,6 +45,35 @@ La base inicial es Google Sheets. `setupDatabase()` crea las hojas cuando no exi
 
 ## Hojas principales
 
+### Usuarios
+
+Campos base:
+
+- id, nombreCompleto, correo, telefono, rol, estado, correoConfirmado.
+- passwordHash, passwordSalt, passwordRounds.
+- invitacionId, creadoEn, ultimoAcceso, fechaVencimiento, notas.
+
+Las claves se guardan solo como hash. El superadministrador se valida con hash de propietario y los socios con hash propio creado al activar invitación.
+
+### Invitaciones
+
+Campos base:
+
+- id, usuarioId, nombreCompleto, telefono, correo.
+- codigo, codigoHash, estado, proyectoId, rol, permisos.
+- venceEn, creadoEn, creadoPor, enviadoEn, confirmadoEn, aceptacionUrl.
+
+Las invitaciones nuevas usan `codigoHash`; `codigo` se mantiene por compatibilidad con invitaciones antiguas y debe quedar vacío en registros nuevos.
+
+### AccesosProyecto
+
+Campos base:
+
+- id, usuarioId, proyectoId, rol, permisos, estado.
+- fechaInicio, fechaVencimiento, creadoEn, actualizadoEn.
+
+Apps Script valida esta hoja antes de devolver o modificar datos de un proyecto.
+
 ### Proyectos
 
 Campos base:

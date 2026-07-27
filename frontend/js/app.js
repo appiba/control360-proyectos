@@ -1,16 +1,16 @@
-import { api, isBackendConfigured } from "./api.js?v=dashboard-title-v4-20260727";
+import { api, isBackendConfigured } from "./api.js?v=phase2-access-v1-20260727";
 import {
   clearSession,
   ensureAuthenticated,
   getSession,
   renderLoginScreen,
   updateSessionBadge,
-} from "./auth.js?v=dashboard-title-v4-20260727";
+} from "./auth.js?v=phase2-access-v1-20260727";
 import { exportCurrentView } from "./reports.js";
 import { getCurrentPath, refreshRoute, registerRoute, startRouter } from "./router.js";
-import { getState, subscribe } from "./state.js";
+import { getState, setState, subscribe } from "./state.js";
 import { toast } from "./utils.js";
-import { renderDashboard } from "./modules/dashboard.js?v=dashboard-title-v4-20260727";
+import { renderDashboard } from "./modules/dashboard.js?v=phase2-access-v1-20260727";
 import { renderProjects, renderProjectDetail } from "./modules/projects.js";
 import { renderEvents } from "./modules/events.js";
 import { renderBusinesses } from "./modules/businesses.js";
@@ -109,6 +109,7 @@ function setupChrome() {
 function startAuthenticatedApp() {
   setupChrome();
   registerRoutes();
+  syncBackendState();
   if (!routerReady) {
     startRouter();
     routerReady = true;
@@ -130,6 +131,22 @@ function startAuthenticatedApp() {
     lastPath = nextPath;
   });
   subscriptionReady = true;
+}
+
+async function syncBackendState() {
+  if (!isBackendConfigured()) return;
+  const result = await api.getDashboard();
+  if (!result.ok) {
+    toast(result.message || "No fue posible cargar datos reales de Apps Script.", "error");
+    return;
+  }
+  setState({
+    projects: result.data?.projects || [],
+    incomes: result.data?.incomes || [],
+    expenses: result.data?.expenses || [],
+    partners: result.data?.partners || [],
+  });
+  if (routerReady) refreshRoute();
 }
 
 document.addEventListener("DOMContentLoaded", async () => {

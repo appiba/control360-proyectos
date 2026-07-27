@@ -36,12 +36,48 @@ function getParameter_(e, key) {
 }
 
 function buildContext_(method, e, body) {
-  return {
+  var payload = body && (body.payload || body.data) ? (body.payload || body.data) : {};
+  var token = String(
+    body && body.sessionToken ? body.sessionToken :
+      body && body.token ? body.token :
+        payload && payload.token ? payload.token :
+          getParameter_(e, "token") || ""
+  ).trim();
+  var context = {
     method: method,
     userEmail: getActiveUserEmail_(),
+    token: token,
+    session: null,
+    user: null,
     sessionId: body.sessionId || getParameter_(e, "sessionId") || uuid_(),
     requestedAt: nowIso_()
   };
+
+  if (!token) return context;
+
+  try {
+    var session = findActiveSessionByToken_(token);
+    if (!session) return context;
+
+    var expiresAt = new Date(session.venceEn);
+    if (isNaN(expiresAt.getTime()) || expiresAt.getTime() < Date.now()) {
+      updateRecordById_("Sesiones", session.id, {
+        estado: "Vencida",
+        ultimoAcceso: nowIso_()
+      });
+      return context;
+    }
+
+    var user = findUserByEmail_(session.correo);
+    context.session = session;
+    context.user = user || null;
+    context.userEmail = session.correo || context.userEmail;
+    context.sessionId = session.id || context.sessionId;
+  } catch (error) {
+    context.sessionError = String(error && error.message ? error.message : error);
+  }
+
+  return context;
 }
 
 function getActiveUserEmail_() {

@@ -3,9 +3,12 @@ import {
   addExpense,
   addIncome,
   addProject,
+  addUserInvitation,
   archiveProject,
+  confirmUserInvitation,
   getState,
   resetDemoState,
+  revokeUserAccess,
   updateProject,
 } from "./state.js";
 import { normalizeText } from "./utils.js";
@@ -21,12 +24,13 @@ async function request(action, payload = {}) {
   }
 
   try {
+    const sessionToken = getStoredSessionToken();
     const result = await fetch(CONFIG.appsScriptUrl, {
       method: "POST",
       headers: {
         "Content-Type": "text/plain;charset=utf-8",
       },
-      body: JSON.stringify({ action, payload }),
+      body: JSON.stringify({ action, payload, sessionToken }),
     });
 
     if (!result.ok) {
@@ -35,9 +39,53 @@ async function request(action, payload = {}) {
       ]);
     }
 
-    return await result.json();
+    const parsed = await result.json();
+    if (parsed.ok) applyBackendMutation(action, parsed.data);
+    return parsed;
   } catch (error) {
-    return response(false, {}, "Error de conexión con Apps Script.", [error.message]);
+    return response(false, {}, "Error de conexion con Apps Script.", [error.message]);
+  }
+}
+
+function getStoredSessionToken() {
+  try {
+    const stored = localStorage.getItem(CONFIG.sessionKey);
+    if (!stored) return "";
+    return JSON.parse(stored)?.token || "";
+  } catch {
+    return "";
+  }
+}
+
+function applyBackendMutation(action, data) {
+  if (!data) return;
+  switch (action) {
+    case "crearProyecto":
+      addProject(data);
+      break;
+    case "actualizarProyecto":
+      updateProject(data.id, data);
+      break;
+    case "archivarProyecto":
+      archiveProject(data.id);
+      break;
+    case "registrarIngreso":
+      addIncome(data);
+      break;
+    case "registrarGasto":
+      addExpense(data);
+      break;
+    case "invitarUsuario":
+      addUserInvitation(data);
+      break;
+    case "confirmarCorreo":
+      confirmUserInvitation(data);
+      break;
+    case "revocarAcceso":
+      revokeUserAccess(data.id);
+      break;
+    default:
+      break;
   }
 }
 
@@ -61,12 +109,12 @@ function handleLocalAction(action, payload) {
       ]);
 
     case "validarSesion":
-      return response(false, {}, "No hay sesión de backend en modo demo.", [
+      return response(false, {}, "No hay sesion de backend en modo demo.", [
         "BACKEND_REQUIRED",
       ]);
 
     case "cerrarSesion":
-      return response(true, {}, "Sesión local cerrada.");
+      return response(true, {}, "Sesion local cerrada.");
 
     case "listarProyectos":
       return response(true, state.projects);
@@ -123,12 +171,33 @@ function handleLocalAction(action, payload) {
     case "obtenerHistorial":
       return response(true, state.history);
 
+    case "listarUsuarios":
+      return response(true, state.users || []);
+
+    case "listarInvitaciones":
+      return response(true, state.invitations || []);
+
+    case "listarAccesosProyecto":
+      return response(true, state.accesses || []);
+
+    case "listarPermisos":
+      return response(true, state.permissions || []);
+
+    case "invitarUsuario":
+      return response(true, addUserInvitation(payload), "Invitacion demo creada.");
+
+    case "confirmarCorreo":
+      return response(true, confirmUserInvitation(payload), "Invitacion demo confirmada.");
+
+    case "revocarAcceso":
+      return response(true, revokeUserAccess(payload.id), "Acceso demo revocado.");
+
     case "resetDemo":
       resetDemoState();
       return response(true, getState(), "Modo demo reiniciado.");
 
     default:
-      return response(true, {}, `Acción ${action} preparada para Apps Script.`);
+      return response(true, {}, `Accion ${action} preparada para Apps Script.`);
   }
 }
 
@@ -139,6 +208,7 @@ export const api = {
   login: (credentials) => request("login", credentials),
   validateSession: (token) => request("validarSesion", { token }),
   logout: (token) => request("cerrarSesion", { token }),
+  confirmInvitation: (activation) => request("confirmarCorreo", activation),
   listProjects: () => request("listarProyectos"),
   getProject: (id) => request("obtenerProyecto", { id }),
   createProject: (project) => request("crearProyecto", project),
@@ -151,8 +221,13 @@ export const api = {
   getExpenseCatalog: () => request("obtenerCatalogoGastos"),
   getDashboard: () => request("obtenerDashboard"),
   getHistory: () => request("obtenerHistorial"),
+  listUsers: () => request("listarUsuarios"),
+  listInvitations: () => request("listarInvitaciones"),
+  listProjectAccesses: () => request("listarAccesosProyecto"),
+  listPermissions: () => request("listarPermisos"),
+  inviteUser: (invitation) => request("invitarUsuario", invitation),
+  revokeAccess: (id) => request("revocarAcceso", { id }),
   resetDemo: () => request("resetDemo"),
 };
 
 export { isBackendConfigured };
-

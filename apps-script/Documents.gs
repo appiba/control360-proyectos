@@ -2,6 +2,8 @@ function subirDocumentoMetadata_(payload, context) {
   var data = sanitizeRecord_(payload || {});
   var missing = requireFields_(data, ["proyectoId", "categoria", "nombre"]);
   if (missing.length) return fail_("Faltan campos obligatorios.", missing);
+  var authError = requireProjectPermission_(context, data.proyectoId, "subirDocumentos");
+  if (authError) return authError;
   var record = {
     id: uuid_(),
     proyectoId: data.proyectoId,

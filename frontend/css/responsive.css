@@ -30,6 +30,10 @@
   .login-access-card .login-form {
     grid-template-columns: minmax(220px, 1fr) minmax(180px, 0.82fr) 72px;
   }
+
+  .invitation-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 900px) {
@@ -104,7 +108,9 @@
 
   .kpi-grid,
   .module-grid,
-  .form-grid {
+  .form-grid,
+  .users-summary,
+  .invitation-form {
     grid-template-columns: 1fr;
   }
 

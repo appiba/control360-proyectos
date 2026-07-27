@@ -32,6 +32,16 @@ function dispatchAction_(action, payload, context) {
       return aprobarSolicitud_(payload, context);
     case "invitarUsuario":
       return invitarUsuario_(payload, context);
+    case "listarUsuarios":
+      return listarUsuarios_(payload, context);
+    case "listarInvitaciones":
+      return listarInvitaciones_(payload, context);
+    case "listarAccesosProyecto":
+      return listarAccesosProyecto_(payload, context);
+    case "listarPermisos":
+      return listarPermisos_(payload, context);
+    case "revocarAcceso":
+      return revocarAcceso_(payload, context);
     case "listarProyectos":
       return listarProyectos_(payload, context);
     case "obtenerProyecto":

@@ -20,12 +20,12 @@ Objetivo: pasar de demo visual a acceso privado controlado.
 
 Entregables:
 
-- Superadministrador único.
-- Invitaciones por correo.
-- Confirmación de correo.
+- Superadministrador único. **Implementado**.
+- Invitaciones por correo/código. **Implementado**.
+- Activación de usuario invitado con clave propia. **Implementado**.
 - Solicitudes de acceso.
-- Roles y permisos por proyecto.
-- Revocación y vencimiento de accesos.
+- Roles y permisos por proyecto. **Implementado**.
+- Revocación y vencimiento de accesos. **Implementado**.
 
 ## Fase 3: motor financiero
 

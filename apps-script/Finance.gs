@@ -1,13 +1,21 @@
-function calcularIndicadores_(payload) {
+function calcularIndicadores_(payload, context) {
+  var authError = requireActiveSession_(context);
+  if (authError) return authError;
   var proyectoId = payload && payload.proyectoId ? payload.proyectoId : "";
   var incomes = readRecords_("Ingresos");
   var expenses = readRecords_("Gastos");
   var projects = readRecords_("Proyectos");
 
   if (proyectoId) {
+    authError = requireProjectPermission_(context, proyectoId, "verResumen");
+    if (authError) return authError;
     incomes = incomes.filter(function (item) { return String(item.proyectoId) === String(proyectoId); });
     expenses = expenses.filter(function (item) { return String(item.proyectoId) === String(proyectoId); });
     projects = projects.filter(function (item) { return String(item.id) === String(proyectoId); });
+  } else {
+    projects = filterByProjectAccess_(projects, context, "verResumen");
+    incomes = filterByProjectAccess_(incomes, context, "verIngresos");
+    expenses = filterByProjectAccess_(expenses, context, "verGastos");
   }
 
   var totalIncome = sumRecords_(incomes, "valorCobrado");
@@ -29,11 +37,17 @@ function calcularIndicadores_(payload) {
 }
 
 function obtenerDashboard_(payload, context) {
-  var projects = readRecords_("Proyectos");
-  var incomes = readRecords_("Ingresos");
-  var expenses = readRecords_("Gastos");
-  var partners = readRecords_("Socios");
-  var indicators = calcularIndicadores_({}).data;
+  var authError = requireActiveSession_(context);
+  if (authError) return authError;
+  var projects = filterByProjectAccess_(readRecords_("Proyectos"), context, "verResumen");
+  var projectIds = {};
+  projects.forEach(function (project) { projectIds[String(project.id)] = true; });
+  var incomes = filterByProjectAccess_(readRecords_("Ingresos"), context, "verIngresos");
+  var expenses = filterByProjectAccess_(readRecords_("Gastos"), context, "verGastos");
+  var partners = readRecords_("Socios").filter(function (partner) {
+    return projectIds[String(partner.proyectoId)] && canAccessProject_(context, partner.proyectoId, "verSocios");
+  });
+  var indicators = calcularIndicadores_({}, context).data;
   return ok_({
     projects: projects,
     incomes: incomes,
@@ -48,6 +62,8 @@ function registrarDesembolso_(payload, context) {
   var data = sanitizeRecord_(payload || {});
   var missing = requireFields_(data, ["proyectoId"]);
   if (missing.length) return fail_("Faltan campos obligatorios.", missing);
+  var authError = requireProjectPermission_(context, data.proyectoId, "modificarDatos");
+  if (authError) return authError;
   var record = {
     id: uuid_(),
     proyectoId: data.proyectoId,
@@ -69,6 +85,8 @@ function crearEscenario_(payload, context) {
   var data = sanitizeRecord_(payload || {});
   var missing = requireFields_(data, ["proyectoId", "nombre"]);
   if (missing.length) return fail_("Faltan campos obligatorios.", missing);
+  var authError = requireProjectPermission_(context, data.proyectoId, "modificarDatos");
+  if (authError) return authError;
   var ingresos = toNumber_(data.ingresos);
   var gastos = toNumber_(data.gastos);
   var utilidadTotal = ingresos - gastos;

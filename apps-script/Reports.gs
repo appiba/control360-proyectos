@@ -1,5 +1,9 @@
 function generarInforme_(payload, context) {
   var data = sanitizeRecord_(payload || {});
+  var authError = data.proyectoId
+    ? requireProjectPermission_(context, data.proyectoId, "generarInformes")
+    : requireSystemPermission_(context, "generarInformes");
+  if (authError) return authError;
   var record = {
     id: uuid_(),
     proyectoId: data.proyectoId || "",

@@ -247,6 +247,44 @@ function createDemoState() {
         estado: "Activo",
       },
     ],
+    users: [
+      {
+        id: "owner",
+        nombreCompleto: "Superadministrador",
+        correo: "superadmin@control360.local",
+        rol: "Superadmin",
+        estado: "Activo",
+        correoConfirmado: true,
+        ultimoAcceso: nowISO(),
+        accesos: [],
+      },
+    ],
+    invitations: [],
+    accesses: [],
+    permissions: [
+      "verResumen",
+      "verIngresos",
+      "verGastos",
+      "registrarIngresos",
+      "registrarGastos",
+      "verUtilidades",
+      "verSocios",
+      "verParticipaciones",
+      "descargarInformes",
+      "generarInformes",
+      "subirDocumentos",
+      "verDocumentos",
+      "modificarDatos",
+      "invitarUsuarios",
+      "administrarPermisos",
+      "cerrarProyecto",
+    ].map((permission) => ({
+      id: permission,
+      clave: permission,
+      nombre: permission,
+      descripcion: "Permiso configurable por proyecto.",
+      activo: true,
+    })),
     history: [
       {
         id: createUUID(),
@@ -468,4 +506,91 @@ export function addPartner(partner) {
   });
   notify();
   return record;
+}
+
+export function addUserInvitation(payload) {
+  const invitation = payload?.invitacion || payload || {};
+  const activationCode = payload?.activationCode || invitation.activationCode || createUUID();
+  const record = {
+    id: invitation.id || createUUID(),
+    usuarioId: invitation.usuarioId || "",
+    nombreCompleto: invitation.nombreCompleto || "",
+    telefono: invitation.telefono || "",
+    correo: invitation.correo || "",
+    estado: invitation.estado || "Invitacion pendiente",
+    proyectoId: invitation.proyectoId || "",
+    rol: invitation.rol || "Socio",
+    permisos: invitation.permisos || "verResumen,verIngresos,verGastos,verSocios,verDocumentos",
+    venceEn: invitation.venceEn || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    creadoEn: invitation.creadoEn || nowISO(),
+    creadoPor: invitation.creadoPor || "Superadmin",
+    enviadoEn: invitation.enviadoEn || "",
+    confirmadoEn: invitation.confirmadoEn || "",
+    aceptacionUrl: invitation.aceptacionUrl || "",
+    activationCode,
+  };
+  state.invitations = [record, ...(state.invitations || []).filter((item) => item.id !== record.id)];
+  addHistory({
+    modulo: "Usuarios",
+    accion: "Invitar usuario",
+    proyectoId: record.proyectoId,
+    observacion: record.correo,
+  });
+  notify();
+  return {
+    invitacion: record,
+    activationCode,
+    activationUrl: payload?.activationUrl || record.aceptacionUrl,
+    email: payload?.email || {},
+  };
+}
+
+export function confirmUserInvitation(payload) {
+  const user = payload?.usuario || {
+    id: createUUID(),
+    nombreCompleto: payload?.nombreCompleto || payload?.correo || "Socio invitado",
+    correo: payload?.correo || "",
+    rol: "Socio",
+    estado: "Activo",
+    correoConfirmado: true,
+  };
+  const access = payload?.acceso || null;
+
+  state.users = [user, ...(state.users || []).filter((item) => item.id !== user.id && item.correo !== user.correo)];
+  if (access) {
+    state.accesses = [access, ...(state.accesses || []).filter((item) => item.id !== access.id)];
+  }
+  if (payload?.codigo || payload?.invitacionId) {
+    state.invitations = (state.invitations || []).map((invitation) => {
+      if (invitation.id !== payload.invitacionId && invitation.activationCode !== payload.codigo) return invitation;
+      return { ...invitation, usuarioId: user.id, estado: "Confirmada", confirmadoEn: nowISO() };
+    });
+  }
+  addHistory({
+    modulo: "Usuarios",
+    accion: "Confirmar invitacion",
+    proyectoId: access?.proyectoId || "",
+    observacion: user.correo,
+  });
+  notify();
+  return payload;
+}
+
+export function revokeUserAccess(id) {
+  let revoked = null;
+  state.accesses = (state.accesses || []).map((access) => {
+    if (access.id !== id) return access;
+    revoked = { ...access, estado: "Revocado", actualizadoEn: nowISO() };
+    return revoked;
+  });
+  if (revoked) {
+    addHistory({
+      modulo: "Usuarios",
+      accion: "Revocar acceso",
+      proyectoId: revoked.proyectoId,
+      observacion: revoked.usuarioId,
+    });
+    notify();
+  }
+  return revoked || { id, estado: "Revocado" };
 }

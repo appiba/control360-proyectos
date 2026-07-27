@@ -69,10 +69,12 @@ La respuesta estándar es:
 
 ### Fase 2: usuarios, permisos e invitaciones
 
-- Confirmación de correo.
-- Invitaciones con vencimiento.
+- Login del superadministrador validado por hash en Apps Script.
+- Confirmación/activación de usuario invitado con clave propia.
+- Invitaciones con código privado, hash y vencimiento.
 - Accesos por proyecto.
 - Roles y permisos configurables.
+- Revocación de accesos.
 - Auditoría completa de accesos.
 
 ### Fase 3: finanzas avanzadas
@@ -99,10 +101,10 @@ La respuesta estándar es:
 - Liquidaciones y cierre de proyectos.
 - Historial restaurable cuando sea seguro.
 
-## Supuestos de Fase 1
+## Estado operativo
 
-- No existe todavía URL desplegada de Apps Script.
-- El frontend debe avisar que trabaja en modo demo/local hasta configurar `/exec`.
+- Ya existe URL desplegada de Apps Script configurada en el frontend.
+- El frontend trabaja en modo backend cuando `APPS_SCRIPT_URL` apunta al `/exec`.
 - No se cargan datos financieros ficticios en Google Sheets.
 - Los datos de demostración viven únicamente en el frontend o en `seedDemoData()`.
 

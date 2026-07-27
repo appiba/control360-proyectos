@@ -1741,3 +1741,130 @@ tr:hover td {
   min-width: 0;
 }
 
+.login-invitation-panel {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 0.55rem;
+  padding-top: 0.5rem;
+}
+
+.login-invitation-panel summary {
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.62);
+  font-family: var(--font-access);
+  font-size: 0.66rem;
+  letter-spacing: 0.055em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.login-invitation-panel summary:hover,
+.login-invitation-panel summary:focus-visible {
+  color: var(--primary);
+  outline: none;
+}
+
+.invitation-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) 76px;
+  align-items: end;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.invitation-form label {
+  display: grid;
+  gap: 0.3rem;
+  color: rgba(255, 255, 255, 0.68);
+  font-family: var(--font-access);
+  font-size: 0.66rem;
+  letter-spacing: 0.025em;
+}
+
+.invitation-form input {
+  min-height: 34px;
+  border-radius: 11px;
+  font-size: 0.72rem;
+  padding: 0.55rem 0.7rem;
+}
+
+.invitation-form .button {
+  width: 76px;
+  min-height: 34px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.64rem;
+}
+
+.invitation-form .login-message {
+  grid-column: 1 / -1;
+}
+
+.users-admin-grid {
+  align-items: start;
+}
+
+.users-summary {
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+}
+
+.checkbox-line {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.checkbox-line input {
+  width: auto;
+}
+
+.permissions-fieldset {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.8rem;
+}
+
+.permissions-fieldset legend {
+  color: var(--text-muted);
+  padding: 0 0.35rem;
+}
+
+.permissions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.45rem;
+}
+
+.permission-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--text-muted);
+  padding: 0.45rem 0.65rem;
+  font-size: 0.76rem;
+}
+
+.permission-chip input {
+  width: auto;
+}
+
+.invitation-result {
+  border: 1px solid rgba(185, 220, 74, 0.26);
+  border-radius: var(--radius-md);
+  background: rgba(185, 220, 74, 0.075);
+  margin-top: 0.85rem;
+  padding: 0.85rem;
+}
+
+.invitation-result code {
+  display: block;
+  overflow-x: auto;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.26);
+  color: var(--primary);
+  margin-top: 0.45rem;
+  padding: 0.75rem;
+  user-select: all;
+}
+

@@ -2,7 +2,7 @@
 
 ## GitHub Pages
 
-El frontend está diseñado para publicarse desde `/frontend`.
+El repositorio se publica desde la raíz. El archivo `index.html` de la raíz redirige a `/frontend/`, donde vive la aplicación real.
 
 Pasos:
 
@@ -10,7 +10,7 @@ Pasos:
 2. Entrar a `Settings → Pages`.
 3. Elegir `Deploy from a branch`.
 4. Seleccionar rama `main`.
-5. Seleccionar carpeta `/frontend`.
+5. Seleccionar carpeta `/(raíz)`.
 6. Guardar.
 
 Las rutas usan `./` y hash routing para funcionar bajo GitHub Pages sin servidor adicional.
@@ -27,7 +27,7 @@ Pasos:
 
 1. Abrir el proyecto de Apps Script indicado.
 2. Copiar todos los archivos `.gs` y `appsscript.json` desde `apps-script/`.
-3. Ejecutar `setupDatabase()`.
+3. Ejecutar `setupDatabase()` después de cargar Fase 2. Esto agrega columnas nuevas a `Usuarios` e `Invitaciones` sin borrar datos.
 4. Revisar las hojas creadas en Google Sheets.
 5. Desplegar como aplicación web.
 6. Copiar la URL terminada en `/exec`.
@@ -53,6 +53,10 @@ Antes de usar producción:
 
 - Confirmar que `healthCheck` responde `ok: true`.
 - Confirmar que `setupDatabase` creó todas las hojas.
+- Confirmar que `Usuarios` tenga columnas `rol`, `passwordHash`, `passwordSalt`, `passwordRounds` e `invitacionId`.
+- Confirmar que `Invitaciones` tenga `codigoHash`, `creadoPor`, `enviadoEn` y `aceptacionUrl`.
+- Entrar como propietario y abrir el módulo `Usuarios`.
+- Crear una invitación de prueba para un correo propio/secundario y activar el acceso con el código.
 - Crear un proyecto de prueba no sensible.
 - Registrar un ingreso y un gasto de prueba.
 - Revisar que el historial tenga auditoría.

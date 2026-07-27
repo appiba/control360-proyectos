@@ -1,4 +1,4 @@
-import { CONFIG } from "./config.js";
+import { CONFIG, isBackendConfigured } from "./config.js";
 import { nowISO, toast } from "./utils.js";
 
 const OWNER_EMAIL_HASH = "iODOB2w09LQRJL80hoD8rwJfi9oOHhOtczm+bW81nOw=";
@@ -40,8 +40,12 @@ export async function ensureAuthenticated(api) {
   const session = getSession();
   if (!session?.token) return false;
 
-  if (isLocalOwnerSession(session)) {
+  if (isLocalOwnerSession(session) && !isBackendConfigured()) {
     return true;
+  }
+  if (isLocalOwnerSession(session) && isBackendConfigured()) {
+    clearSession();
+    return false;
   }
 
   const result = await api.validateSession(session.token);
@@ -113,6 +117,28 @@ export function renderLoginScreen(api, onAuthenticated) {
             <p class="login-message" id="login-message" role="alert"></p>
             <p class="login-access-note">Acceso privado · administrador general · socios por invitacion · sesion protegida.</p>
           </form>
+          <details class="login-invitation-panel" id="login-invitation-panel">
+            <summary>Activar socio invitado</summary>
+            <form class="invitation-form" id="invitation-form">
+              <label>Usuario
+                <input name="correo" type="email" autocomplete="username" required placeholder="correo invitado" />
+              </label>
+              <label>Codigo
+                <input name="codigo" autocomplete="one-time-code" required placeholder="codigo privado" />
+              </label>
+              <label>Clave nueva
+                <span class="password-field">
+                  <input id="invitation-password-input" name="password" type="password" autocomplete="new-password" required placeholder="crea tu clave" />
+                  <button class="password-toggle" id="invitation-password-toggle" type="button" aria-label="Mostrar clave" aria-pressed="false">&#128065;</button>
+                </span>
+              </label>
+              <label>Nombre
+                <input name="nombreCompleto" autocomplete="name" placeholder="nombre del socio" />
+              </label>
+              <button class="button button--ghost" type="submit">Activar</button>
+              <p class="login-message" id="invitation-message" role="alert"></p>
+            </form>
+          </details>
         </aside>
       </div>
     </section>
@@ -122,8 +148,14 @@ export function renderLoginScreen(api, onAuthenticated) {
   const message = modalRoot.querySelector("#login-message");
   const passwordInput = modalRoot.querySelector("#password-input");
   const passwordToggle = modalRoot.querySelector("#password-toggle");
+  const invitationPanel = modalRoot.querySelector("#login-invitation-panel");
+  const invitationForm = modalRoot.querySelector("#invitation-form");
+  const invitationMessage = modalRoot.querySelector("#invitation-message");
+  const invitationPasswordInput = modalRoot.querySelector("#invitation-password-input");
+  const invitationPasswordToggle = modalRoot.querySelector("#invitation-password-toggle");
   const routeButtons = modalRoot.querySelectorAll("[data-login-route]");
   const contactButtons = modalRoot.querySelectorAll("[data-show-contact]");
+  const inviteFromUrl = getInviteFromLocation();
 
   passwordToggle.addEventListener("click", () => {
     const showing = passwordInput.type === "text";
@@ -131,6 +163,19 @@ export function renderLoginScreen(api, onAuthenticated) {
     passwordToggle.setAttribute("aria-label", showing ? "Mostrar clave" : "Ocultar clave");
     passwordToggle.setAttribute("aria-pressed", String(!showing));
   });
+
+  invitationPasswordToggle.addEventListener("click", () => {
+    const showing = invitationPasswordInput.type === "text";
+    invitationPasswordInput.type = showing ? "password" : "text";
+    invitationPasswordToggle.setAttribute("aria-label", showing ? "Mostrar clave" : "Ocultar clave");
+    invitationPasswordToggle.setAttribute("aria-pressed", String(!showing));
+  });
+
+  if (inviteFromUrl.codigo || inviteFromUrl.usuario) {
+    invitationPanel.open = true;
+    invitationForm.querySelector("input[name='codigo']").value = inviteFromUrl.codigo || "";
+    invitationForm.querySelector("input[name='correo']").value = inviteFromUrl.usuario || "";
+  }
 
   routeButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -157,7 +202,9 @@ export function renderLoginScreen(api, onAuthenticated) {
     submitButton.textContent = "...";
     message.textContent = "";
 
-    const localOwnerSession = await createLocalOwnerSession(correo, password);
+    const localOwnerSession = !isBackendConfigured()
+      ? await createLocalOwnerSession(correo, password)
+      : null;
     if (localOwnerSession) {
       submitButton.disabled = false;
       submitButton.textContent = "Login";
@@ -181,6 +228,36 @@ export function renderLoginScreen(api, onAuthenticated) {
 
     message.textContent = "Correo o clave incorrectos.";
   });
+
+  invitationForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const submitButton = invitationForm.querySelector("button[type='submit']");
+    const formData = Object.fromEntries(new FormData(invitationForm).entries());
+    submitButton.disabled = true;
+    submitButton.textContent = "...";
+    invitationMessage.textContent = "";
+
+    const result = await api.confirmInvitation({
+      correo: String(formData.correo || "").trim(),
+      codigo: String(formData.codigo || "").trim(),
+      password: normalizePassword(formData.password),
+      nombreCompleto: String(formData.nombreCompleto || "").trim(),
+    });
+
+    submitButton.disabled = false;
+    submitButton.textContent = "Activar";
+
+    if (result.ok && result.data?.token) {
+      openSession({
+        token: result.data.token,
+        expiresAt: result.data.venceEn,
+        usuario: result.data.usuario,
+      }, modalRoot, onAuthenticated);
+      return;
+    }
+
+    invitationMessage.textContent = result.message || "No fue posible activar la invitacion.";
+  });
 }
 
 export function updateSessionBadge() {
@@ -196,7 +273,12 @@ export function updateSessionBadge() {
 export function hasPermission(permission) {
   const session = getSession();
   if (session?.usuario?.rol === "Superadmin") return true;
-  return Boolean(session?.permisos?.includes(permission));
+  if (session?.usuario?.permisos?.includes("*")) return true;
+  if (session?.usuario?.permisos?.includes(permission)) return true;
+  return Boolean(session?.usuario?.accesos?.some((access) => {
+    const permissions = String(access.permisos || "").split(",").map((item) => item.trim());
+    return permissions.includes("*") || permissions.includes(permission);
+  }));
 }
 
 function openSession(session, modalRoot, onAuthenticated) {
@@ -265,6 +347,16 @@ function normalizeEmail(value) {
 
 function normalizePassword(value) {
   return String(value || "").trim();
+}
+
+function getInviteFromLocation() {
+  const rawHash = window.location.hash || "";
+  const query = rawHash.includes("?") ? rawHash.slice(rawHash.indexOf("?") + 1) : window.location.search.slice(1);
+  const params = new URLSearchParams(query);
+  return {
+    codigo: params.get("codigo") || params.get("invite") || "",
+    usuario: params.get("usuario") || params.get("correo") || "",
+  };
 }
 
 function constantTimeEquals(a, b) {
