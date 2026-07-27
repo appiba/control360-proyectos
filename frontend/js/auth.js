@@ -89,7 +89,7 @@ export function renderLoginScreen(api, onAuthenticated) {
             CONTROL360 centraliza patrimonio, proyectos, ingresos, gastos, socios,
             compras y documentos en una experiencia privada, elegante y ejecutiva.
           </p>
-          <button class="login-learn" type="button">Acceso privado</button>
+          <button class="login-learn" type="button">Entrar ahora</button>
         </div>
 
         <aside class="login-access-card" aria-label="Acceso administrador">
