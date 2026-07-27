@@ -1729,3 +1729,15 @@ tr:hover td {
   content: "BIENVENIDO";
 }
 
+.hero-panel h2 {
+  max-width: none;
+  font-size: clamp(2.35rem, 4.15vw, 4.25rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+}
+
+.hero-panel > div:first-child {
+  min-width: 0;
+}
+

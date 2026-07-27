@@ -1,5 +1,5 @@
 import { getState } from "../state.js";
-import { renderDashboardCharts } from "../charts.js?v=elegant-login-v3-20260727";
+import { renderDashboardCharts } from "../charts.js?v=dashboard-title-v4-20260727";
 import { formatCurrency, formatPercent, getProjectFinancials, groupBy, sumBy } from "../utils.js";
 
 export function renderDashboard(container) {
@@ -10,7 +10,7 @@ export function renderDashboard(container) {
     <section class="hero-panel">
       <div>
         <p class="eyebrow">CONTROL360 privado</p>
-        <h2>Resumen financiero elegante y total.</h2>
+        <h2>Resumen financiero</h2>
         <p>
           Patrimonio, caja, riesgo, socios, ingresos, gastos y proyectos en una sola vista.
           Diseñado como centro ejecutivo personal, limpio y directo.

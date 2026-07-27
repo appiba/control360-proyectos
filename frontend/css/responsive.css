@@ -71,6 +71,11 @@
     grid-template-columns: 1fr;
   }
 
+  .hero-panel h2 {
+    white-space: normal;
+    font-size: clamp(2.25rem, 8vw, 3.55rem);
+  }
+
   .chart-grid {
     grid-template-columns: 1fr;
   }
