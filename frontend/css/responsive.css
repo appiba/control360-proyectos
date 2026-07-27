@@ -18,8 +18,8 @@
   }
 
   .login-access-card {
-    width: min(1040px, calc(100% - 2rem));
-    grid-template-columns: minmax(245px, 0.72fr) minmax(610px, 1.28fr);
+    width: min(850px, calc(100% - 2rem));
+    grid-template-columns: 1fr;
     position: relative;
     left: auto;
     bottom: auto;
@@ -28,7 +28,7 @@
   }
 
   .login-access-card .login-form {
-    grid-template-columns: minmax(220px, 1fr) minmax(180px, 0.82fr) 88px;
+    grid-template-columns: minmax(220px, 1fr) minmax(180px, 0.82fr) 72px;
   }
 }
 
@@ -135,9 +135,9 @@
   }
 
   .login-hero h1 {
-    font-size: clamp(2.45rem, 12vw, 4.3rem);
-    letter-spacing: 0.08em;
-    text-indent: 0.08em;
+    font-size: clamp(2.25rem, 11vw, 3.6rem);
+    letter-spacing: 0.1em;
+    text-indent: 0.1em;
   }
 
   .login-logo-emblem {
@@ -157,6 +157,11 @@
 
   .login-access-card .button {
     width: 100%;
+  }
+
+  .login-access-note {
+    white-space: normal;
+    line-height: 1.45;
   }
 }
 

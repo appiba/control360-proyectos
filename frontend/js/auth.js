@@ -84,10 +84,9 @@ export function renderLoginScreen(api, onAuthenticated) {
         </header>
 
         <div class="login-hero">
-          <img class="login-logo-emblem" src="./assets/brand/control360-logo.png" alt="CONTROL360 ERP inteligente" />
-          <p class="eyebrow">ERP inteligente con IA</p>
-          <h1 class="brand-hero-title">CONTROL360</h1>
-          <p class="brand-tagline">Plataforma privada de finanzas, datos y patrimonio.</p>
+          <p class="eyebrow">Centro privado patrimonial</p>
+          <h1 class="brand-hero-title">BIENVENIDO</h1>
+          <p class="brand-tagline">CONTROL360 · ERP inteligente</p>
           <p>
             Centraliza proyectos, eventos, socios, ingresos, gastos, compras y documentos
             en una experiencia ejecutiva, segura y preparada para analisis inteligente.
@@ -100,11 +99,6 @@ export function renderLoginScreen(api, onAuthenticated) {
         </div>
 
         <aside class="login-access-card" aria-label="Acceso administrador">
-          <div>
-            <p class="eyebrow">Acceso privado</p>
-            <h2>Superadmin</h2>
-            <p>Solo el propietario entra ahora. Socios queda listo para invitaciones.</p>
-          </div>
           <form class="login-form" id="login-form">
             <label>Usuario
               <input name="correo" type="email" autocomplete="username" required placeholder="usuario administrador" />
@@ -117,12 +111,8 @@ export function renderLoginScreen(api, onAuthenticated) {
             </label>
             <button class="button login-submit" type="submit">Login</button>
             <p class="login-message" id="login-message" role="alert"></p>
+            <p class="login-access-note">Acceso privado · administrador general · socios por invitacion · sesion protegida.</p>
           </form>
-          <ul class="login-security-list">
-            <li>Administrador unico.</li>
-            <li>Socios por invitacion.</li>
-            <li>Sesion privada.</li>
-          </ul>
         </aside>
       </div>
     </section>

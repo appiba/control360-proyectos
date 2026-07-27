@@ -1,5 +1,5 @@
 import { getState } from "../state.js";
-import { renderDashboardCharts } from "../charts.js?v=access-brand-v2-20260727";
+import { renderDashboardCharts } from "../charts.js?v=elegant-login-v3-20260727";
 import { formatCurrency, formatPercent, getProjectFinancials, groupBy, sumBy } from "../utils.js";
 
 export function renderDashboard(container) {

@@ -1491,3 +1491,241 @@ tr:hover td {
   font-family: var(--font-access);
 }
 
+/* Refinement: premium, calmer and compact after visual review. */
+.button {
+  width: max-content;
+  max-width: 100%;
+  min-height: 36px;
+  padding: 0.5rem 0.8rem;
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.03) 45%),
+    linear-gradient(135deg, rgba(185, 220, 74, 0.92), rgba(127, 199, 106, 0.9));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    0 8px 18px rgba(0, 0, 0, 0.2);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+}
+
+.button:hover,
+.icon-button:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    0 10px 24px rgba(0, 0, 0, 0.24),
+    0 0 14px rgba(185, 220, 74, 0.12);
+}
+
+.button--ghost {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+    rgba(255, 255, 255, 0.045);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 18px rgba(0, 0, 0, 0.14);
+}
+
+.toolbar .button,
+.section-heading > .button,
+.project-card .button,
+.empty-state .button {
+  flex: 0 0 auto;
+  justify-self: start;
+}
+
+.project-card > .button,
+.project-card .toolbar .button {
+  min-height: 34px;
+  padding: 0.46rem 0.72rem;
+  font-size: 0.72rem;
+}
+
+.progress span {
+  background: linear-gradient(90deg, rgba(185, 220, 74, 0.88), rgba(127, 199, 106, 0.82));
+  box-shadow: 0 0 10px rgba(185, 220, 74, 0.14);
+}
+
+.login-screen {
+  background:
+    radial-gradient(circle at 15% 43%, rgba(185, 220, 74, 0.26), transparent 18rem),
+    radial-gradient(circle at 78% 45%, rgba(127, 199, 106, 0.2), transparent 20rem),
+    linear-gradient(145deg, rgba(13, 19, 10, 0.96), rgba(3, 6, 5, 1));
+}
+
+.login-landing {
+  min-height: min(710px, calc(100vh - 1.6rem));
+  border-color: rgba(185, 220, 74, 0.16);
+  background:
+    radial-gradient(circle at 15% 30%, rgba(185, 220, 74, 0.12), transparent 18rem),
+    radial-gradient(circle at 82% 52%, rgba(127, 199, 106, 0.11), transparent 24rem),
+    rgba(5, 9, 7, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    0 28px 95px rgba(0, 0, 0, 0.55);
+}
+
+.login-landing::before {
+  filter: blur(48px);
+  opacity: 0.42;
+}
+
+.login-brand .brand__mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 10px 22px rgba(0, 0, 0, 0.26);
+}
+
+.login-brand strong {
+  background: none;
+  color: #f5f7ee;
+  -webkit-text-fill-color: #f5f7ee;
+  font-size: 1rem;
+  letter-spacing: 0.07em;
+  text-shadow: none;
+}
+
+.login-search input {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+
+.login-links button {
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 0.73rem;
+  text-shadow: none;
+}
+
+.login-links .login-join {
+  min-width: 78px;
+  padding: 0.42rem 0.8rem;
+}
+
+.login-hero {
+  max-width: 780px;
+  margin: clamp(3rem, 10vh, 5.9rem) auto 0;
+}
+
+.login-logo-emblem {
+  display: none;
+}
+
+.login-hero h1.brand-hero-title {
+  margin: 0.4rem 0 0.7rem;
+  background: none;
+  color: #f3f5ec;
+  -webkit-text-fill-color: #f3f5ec;
+  font-size: clamp(3.2rem, 7vw, 5.8rem);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+  line-height: 1;
+  text-shadow: 0 18px 48px rgba(0, 0, 0, 0.38);
+}
+
+.login-hero h1.brand-hero-title::after {
+  content: "";
+  display: none;
+}
+
+.brand-tagline {
+  margin: 0 0 0.55rem;
+  color: rgba(219, 236, 171, 0.78);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-shadow: none;
+}
+
+.login-hero p:not(.eyebrow):not(.brand-tagline) {
+  max-width: 590px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.82rem;
+}
+
+.login-meta-pills {
+  margin-top: 0.95rem;
+}
+
+.login-meta-pills span {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 255, 255, 0.68);
+  box-shadow: none;
+  font-size: 0.7rem;
+}
+
+.login-access-card {
+  width: min(850px, calc(100% - 2.3rem));
+  bottom: clamp(1.05rem, 2.4vw, 1.6rem);
+  grid-template-columns: 1fr;
+  border-color: rgba(185, 220, 74, 0.15);
+  border-radius: 22px;
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04)),
+    rgba(10, 15, 13, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 18px 55px rgba(0, 0, 0, 0.36);
+  padding: 0.68rem 0.78rem;
+}
+
+.login-access-card .login-form {
+  grid-template-columns: minmax(230px, 1fr) minmax(200px, 0.86fr) 72px;
+  gap: 0.58rem;
+  align-items: end;
+}
+
+.login-access-card .login-form label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.7rem;
+  letter-spacing: 0.025em;
+}
+
+.login-access-card input {
+  min-height: 36px;
+  border-radius: 12px;
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.03)),
+    rgba(8, 11, 10, 0.52);
+  font-size: 0.74rem;
+}
+
+.login-access-card input:focus {
+  border-color: rgba(185, 220, 74, 0.54);
+  box-shadow: 0 0 0 3px rgba(185, 220, 74, 0.08);
+}
+
+.login-access-card .button.login-submit {
+  width: 72px;
+  min-height: 36px;
+  padding: 0.36rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  letter-spacing: 0.055em;
+}
+
+.login-access-note {
+  grid-column: 1 / -1;
+  margin: -0.04rem 0 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-access);
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.login-message {
+  grid-column: 1 / -1;
+  min-height: 0.85rem;
+  margin: 0;
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.login-screen > .login-card::after {
+  content: "BIENVENIDO";
+}
+
