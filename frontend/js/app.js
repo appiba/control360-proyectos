@@ -1,11 +1,11 @@
-import { api, isBackendConfigured } from "./api.js?v=owner-login-20260727";
+import { api, isBackendConfigured } from "./api.js?v=owner-login-fallback-20260727";
 import {
   clearSession,
   ensureAuthenticated,
   getSession,
   renderLoginScreen,
   updateSessionBadge,
-} from "./auth.js?v=owner-login-20260727";
+} from "./auth.js?v=owner-login-fallback-20260727";
 import { exportCurrentView } from "./reports.js";
 import { getCurrentPath, refreshRoute, registerRoute, startRouter } from "./router.js";
 import { getState, subscribe } from "./state.js";
@@ -97,7 +97,7 @@ function setupChrome() {
 
   logoutButton.addEventListener("click", async () => {
     const session = getSession();
-    if (session?.token) await api.logout(session.token);
+    if (session?.token && session.mode !== "owner-local") await api.logout(session.token);
     clearSession();
     toast("Sesión cerrada.");
     renderLoginScreen(api, startAuthenticatedApp);

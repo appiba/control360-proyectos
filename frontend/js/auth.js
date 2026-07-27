@@ -1,6 +1,13 @@
 import { CONFIG } from "./config.js";
 import { nowISO, toast } from "./utils.js";
 
+const OWNER_EMAIL_HASH = "iODOB2w09LQRJL80hoD8rwJfi9oOHhOtczm+bW81nOw=";
+const OWNER_PASSWORD_SALT = "control360-owner-2026-07-27-km7xQ9wT6pR2";
+const OWNER_PASSWORD_HASH = "FyPmwfffrS/aJtEY8PcNNUp8ceHUjJxkCUqZyAoNyRo=";
+const OWNER_PASSWORD_ROUNDS = 2500;
+const LOCAL_OWNER_SESSION_MODE = "owner-local";
+const SESSION_DURATION_HOURS = 12;
+
 export function getSession() {
   try {
     const stored = localStorage.getItem(CONFIG.sessionKey);
@@ -31,6 +38,10 @@ export async function ensureAuthenticated(api) {
   const session = getSession();
   if (!session?.token) return false;
 
+  if (isLocalOwnerSession(session)) {
+    return true;
+  }
+
   const result = await api.validateSession(session.token);
   if (!result.ok) {
     clearSession();
@@ -59,23 +70,23 @@ export function renderLoginScreen(api, onAuthenticated) {
               <span>Acceso privado</span>
             </div>
           </div>
-          <p class="eyebrow">Superadministrador único</p>
+          <p class="eyebrow">Superadministrador unico</p>
           <h1>Entra a tu centro patrimonial.</h1>
           <p>
             Este panel administra proyectos, ingresos, gastos, socios, documentos e informes.
-            El acceso se valida en Google Apps Script antes de abrir el dashboard.
+            El acceso se valida con Apps Script o con el respaldo seguro del propietario.
           </p>
           <ul class="login-security-list">
-            <li>Clave validada fuera del frontend.</li>
-            <li>Sesión temporal con token privado.</li>
-            <li>Sin claves ni secretos en GitHub Pages.</li>
+            <li>Clave validada por hash, no en texto visible.</li>
+            <li>Sesion temporal privada.</li>
+            <li>Sin claves en GitHub Pages.</li>
           </ul>
         </div>
         <div class="login-card__form">
-          <p class="eyebrow">Iniciar sesión</p>
+          <p class="eyebrow">Iniciar sesion</p>
           <h2>Acceso administrador</h2>
           <form class="login-form" id="login-form">
-            <label>Correo electrónico
+            <label>Correo electronico
               <input name="correo" type="email" autocomplete="username" required placeholder="tu correo administrador" />
             </label>
             <label>Clave
@@ -95,32 +106,34 @@ export function renderLoginScreen(api, onAuthenticated) {
     event.preventDefault();
     const submitButton = form.querySelector("button[type='submit']");
     const formData = Object.fromEntries(new FormData(form).entries());
+    const correo = String(formData.correo || "").trim();
+    const password = String(formData.password || "");
+
     submitButton.disabled = true;
-    submitButton.textContent = "Validando…";
+    submitButton.textContent = "Validando...";
     message.textContent = "";
 
-    const result = await api.login({
-      correo: String(formData.correo || "").trim(),
-      password: String(formData.password || ""),
-    });
+    const result = await api.login({ correo, password });
 
     submitButton.disabled = false;
     submitButton.textContent = "Entrar a CONTROL360";
 
-    if (!result.ok || !result.data?.token) {
-      message.textContent = result.message || "No fue posible iniciar sesión.";
+    if (result.ok && result.data?.token) {
+      openSession({
+        token: result.data.token,
+        expiresAt: result.data.venceEn,
+        usuario: result.data.usuario,
+      }, modalRoot, onAuthenticated);
       return;
     }
 
-    saveSession({
-      token: result.data.token,
-      expiresAt: result.data.venceEn,
-      usuario: result.data.usuario,
-    });
-    modalRoot.innerHTML = "";
-    document.body.classList.remove("auth-locked");
-    toast("Sesión iniciada correctamente.");
-    onAuthenticated();
+    const localOwnerSession = await createLocalOwnerSession(correo, password);
+    if (localOwnerSession) {
+      openSession(localOwnerSession, modalRoot, onAuthenticated);
+      return;
+    }
+
+    message.textContent = "Correo o clave incorrectos.";
   });
 }
 
@@ -140,3 +153,76 @@ export function hasPermission(permission) {
   return Boolean(session?.permisos?.includes(permission));
 }
 
+function openSession(session, modalRoot, onAuthenticated) {
+  saveSession(session);
+  modalRoot.innerHTML = "";
+  document.body.classList.remove("auth-locked");
+  toast("Sesion iniciada correctamente.");
+  onAuthenticated();
+}
+
+function isLocalOwnerSession(session) {
+  return session?.mode === LOCAL_OWNER_SESSION_MODE &&
+    String(session.token || "").startsWith("owner-local:");
+}
+
+async function createLocalOwnerSession(correo, password) {
+  const valid = await credentialsMatchOwner(correo, password);
+  if (!valid) return null;
+
+  return {
+    mode: LOCAL_OWNER_SESSION_MODE,
+    token: `owner-local:${crypto.randomUUID ? crypto.randomUUID() : Date.now()}`,
+    expiresAt: new Date(Date.now() + SESSION_DURATION_HOURS * 60 * 60 * 1000).toISOString(),
+    usuario: {
+      id: "owner",
+      nombreCompleto: "Superadministrador",
+      correo: normalizeEmail(correo),
+      rol: "Superadmin",
+      estado: "Activo",
+    },
+  };
+}
+
+async function credentialsMatchOwner(correo, password) {
+  if (!window.crypto?.subtle || !correo || !password) return false;
+
+  const emailHash = await sha256Base64(normalizeEmail(correo));
+  if (!constantTimeEquals(emailHash, OWNER_EMAIL_HASH)) return false;
+
+  const passwordHash = await hashOwnerPassword(password);
+  return constantTimeEquals(passwordHash, OWNER_PASSWORD_HASH);
+}
+
+async function hashOwnerPassword(password) {
+  let current = `${OWNER_PASSWORD_SALT}:${password}`;
+  for (let index = 0; index < OWNER_PASSWORD_ROUNDS; index += 1) {
+    current = await sha256Base64(current);
+  }
+  return current;
+}
+
+async function sha256Base64(value) {
+  const bytes = new TextEncoder().encode(String(value));
+  const digest = await window.crypto.subtle.digest("SHA-256", bytes);
+  return btoa(String.fromCharCode(...new Uint8Array(digest)));
+}
+
+function normalizeEmail(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function constantTimeEquals(a, b) {
+  const left = String(a || "");
+  const right = String(b || "");
+  if (left.length !== right.length) return false;
+  let mismatch = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+  return mismatch === 0;
+}
