@@ -68,7 +68,7 @@ export function renderDashboardCharts(summary) {
         {
           label: "Presupuesto",
           data: summary.projectBudgets,
-          backgroundColor: "rgba(125, 211, 252, 0.56)",
+          backgroundColor: "rgba(117, 240, 92, 0.42)",
         },
         {
           label: "Resultado",
@@ -87,7 +87,7 @@ export function renderDashboardCharts(summary) {
       datasets: [
         {
           data: summary.expenseValues,
-          backgroundColor: ["#d8ff35", "#7dd3fc", "#a78bfa", "#f8d66d", "#ff6b7a", "#75f05c"],
+          backgroundColor: ["#d8ff35", "#75f05c", "#b8ee00", "#f8d66d", "#9cff80", "#5fcf45"],
           borderWidth: 0,
         },
       ],
@@ -120,7 +120,7 @@ export function renderPartnerChart(labels, values) {
       datasets: [
         {
           data: values,
-          backgroundColor: ["#d8ff35", "#7dd3fc", "#a78bfa", "#f8d66d", "#ff6b7a"],
+          backgroundColor: ["#d8ff35", "#75f05c", "#b8ee00", "#f8d66d", "#9cff80"],
           borderWidth: 0,
         },
       ],

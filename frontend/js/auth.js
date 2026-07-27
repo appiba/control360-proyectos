@@ -7,6 +7,7 @@ const OWNER_PASSWORD_HASH = "FyPmwfffrS/aJtEY8PcNNUp8ceHUjJxkCUqZyAoNyRo=";
 const OWNER_PASSWORD_ROUNDS = 2500;
 const LOCAL_OWNER_SESSION_MODE = "owner-local";
 const SESSION_DURATION_HOURS = 12;
+let pendingLoginRoute = "/dashboard";
 
 export function getSession() {
   try {
@@ -62,7 +63,7 @@ export function renderLoginScreen(api, onAuthenticated) {
   modalRoot.innerHTML = `
     <section class="login-screen" aria-label="Acceso privado CONTROL360">
       <div class="login-landing">
-        <header class="login-nav" aria-label="Navegacion principal">
+        <header class="login-nav" aria-label="Accesos CONTROL360">
           <div class="login-brand">
             <div class="brand__mark" aria-hidden="true">C360</div>
             <strong>CONTROL360</strong>
@@ -70,33 +71,31 @@ export function renderLoginScreen(api, onAuthenticated) {
           <label class="login-search">
             <span class="sr-only">Buscar</span>
             <input type="search" placeholder="Buscar proyectos..." aria-label="Buscar proyectos" />
-            <span aria-hidden="true">⌕</span>
+            <span aria-hidden="true">&#128269;</span>
           </label>
-          <nav class="login-links" aria-label="Enlaces publicos">
-            <a href="#acerca">Acerca</a>
-            <a href="#contacto">Contacto</a>
-            <a href="#faq">FAQ</a>
-            <button class="login-join" type="button">Entrar</button>
+          <nav class="login-links" aria-label="Modulos privados">
+            <button type="button" data-login-route="/proyectos">Proyectos</button>
+            <button type="button" data-login-route="/eventos">Eventos</button>
+            <button type="button" data-login-route="/socios">Socios</button>
+            <button class="login-join" type="button" data-login-route="/dashboard">Administrador</button>
           </nav>
         </header>
-
-        <div class="login-glow" aria-hidden="true"></div>
 
         <div class="login-hero">
           <p class="eyebrow">Centro privado patrimonial</p>
           <h1>BIENVENIDO</h1>
           <p>
-            CONTROL360 centraliza patrimonio, proyectos, ingresos, gastos, socios,
-            compras y documentos en una experiencia privada, elegante y ejecutiva.
+            CONTROL360 centraliza patrimonio, proyectos, eventos, socios, ingresos,
+            gastos, compras y documentos en una experiencia privada y ejecutiva.
           </p>
-          <button class="login-learn" type="button">Entrar ahora</button>
+          <button class="login-learn" type="button" data-login-route="/dashboard">Entrar ahora</button>
         </div>
 
         <aside class="login-access-card" aria-label="Acceso administrador">
           <div>
-            <p class="eyebrow">Iniciar sesion</p>
-            <h2>Acceso administrador</h2>
-            <p>Usa tu credencial de propietario para abrir el dashboard.</p>
+            <p class="eyebrow">Acceso privado</p>
+            <h2>Administrador general</h2>
+            <p>Solo el propietario entra ahora. Socios queda listo para invitaciones.</p>
           </div>
           <form class="login-form" id="login-form">
             <label>Correo electronico
@@ -105,16 +104,16 @@ export function renderLoginScreen(api, onAuthenticated) {
             <label>Clave
               <span class="password-field">
                 <input id="password-input" name="password" type="password" autocomplete="current-password" inputmode="numeric" required placeholder="Clave privada" />
-                <button class="password-toggle" id="password-toggle" type="button" aria-label="Mostrar clave" aria-pressed="false">👁</button>
+                <button class="password-toggle" id="password-toggle" type="button" aria-label="Mostrar clave" aria-pressed="false">&#128065;</button>
               </span>
             </label>
             <p class="login-message" id="login-message" role="alert"></p>
             <button class="button" type="submit">Entrar a CONTROL360</button>
           </form>
           <ul class="login-security-list">
-            <li>Validacion por hash.</li>
+            <li>Administrador unico.</li>
+            <li>Socios por invitacion.</li>
             <li>Sesion privada.</li>
-            <li>Sin clave visible.</li>
           </ul>
         </aside>
       </div>
@@ -125,7 +124,7 @@ export function renderLoginScreen(api, onAuthenticated) {
   const message = modalRoot.querySelector("#login-message");
   const passwordInput = modalRoot.querySelector("#password-input");
   const passwordToggle = modalRoot.querySelector("#password-toggle");
-  const learnButton = modalRoot.querySelector(".login-learn");
+  const routeButtons = modalRoot.querySelectorAll("[data-login-route]");
 
   passwordToggle.addEventListener("click", () => {
     const showing = passwordInput.type === "text";
@@ -134,8 +133,11 @@ export function renderLoginScreen(api, onAuthenticated) {
     passwordToggle.setAttribute("aria-pressed", String(!showing));
   });
 
-  learnButton.addEventListener("click", () => {
-    form.querySelector("input[name='correo']")?.focus();
+  routeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      pendingLoginRoute = button.dataset.loginRoute || "/dashboard";
+      form.querySelector("input[name='correo']")?.focus();
+    });
   });
 
   form.addEventListener("submit", async (event) => {
@@ -195,6 +197,7 @@ function openSession(session, modalRoot, onAuthenticated) {
   saveSession(session);
   modalRoot.innerHTML = "";
   document.body.classList.remove("auth-locked");
+  if (pendingLoginRoute) window.location.hash = `#${pendingLoginRoute}`;
   toast("Sesion iniciada correctamente.");
   onAuthenticated();
 }

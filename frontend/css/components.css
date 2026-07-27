@@ -540,7 +540,7 @@ tr:hover td {
   overflow-y: auto;
   background:
     radial-gradient(circle at 20% 15%, rgba(216, 255, 53, 0.2), transparent 27rem),
-    radial-gradient(circle at 80% 5%, rgba(125, 211, 252, 0.13), transparent 30rem),
+    radial-gradient(circle at 80% 5%, rgba(117, 240, 92, 0.13), transparent 30rem),
     linear-gradient(115deg, rgba(86, 68, 45, 0.32), rgba(4, 7, 8, 0.2) 38%, rgba(13, 17, 16, 0.72)),
     var(--bg);
   padding: 1.25rem;
@@ -649,7 +649,7 @@ tr:hover td {
   background:
     radial-gradient(circle at 14% 38%, rgba(216, 255, 53, 0.48), transparent 17rem),
     radial-gradient(circle at 78% 42%, rgba(117, 240, 92, 0.38), transparent 18rem),
-    radial-gradient(circle at 50% 78%, rgba(125, 211, 252, 0.18), transparent 22rem),
+    radial-gradient(circle at 50% 78%, rgba(184, 238, 0, 0.18), transparent 22rem),
     linear-gradient(145deg, rgba(17, 25, 12, 0.92), rgba(5, 8, 7, 0.98));
   padding: clamp(1rem, 3vw, 2.1rem);
 }
@@ -680,7 +680,7 @@ tr:hover td {
   background:
     radial-gradient(ellipse at 18% 48%, rgba(216, 255, 53, 0.84), transparent 22%),
     radial-gradient(ellipse at 78% 50%, rgba(117, 240, 92, 0.66), transparent 25%),
-    radial-gradient(ellipse at 50% 70%, rgba(125, 211, 252, 0.2), transparent 28%);
+    radial-gradient(ellipse at 50% 70%, rgba(184, 238, 0, 0.2), transparent 28%);
   filter: blur(36px);
   opacity: 0.86;
 }
@@ -899,7 +899,7 @@ tr:hover td {
   background:
     radial-gradient(ellipse at 18% 48%, rgba(216, 255, 53, 0.48), transparent 23%),
     radial-gradient(ellipse at 78% 50%, rgba(117, 240, 92, 0.38), transparent 25%),
-    radial-gradient(ellipse at 50% 70%, rgba(125, 211, 252, 0.13), transparent 30%),
+    radial-gradient(ellipse at 50% 70%, rgba(184, 238, 0, 0.13), transparent 30%),
     rgba(6, 10, 8, 0.82);
 }
 
@@ -962,6 +962,95 @@ tr:hover td {
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     0 24px 70px rgba(0, 0, 0, 0.38);
   backdrop-filter: blur(24px) saturate(1.35);
+}
+
+/* Final CONTROL360 green landing overrides. */
+.login-screen {
+  background:
+    radial-gradient(circle at 14% 38%, rgba(216, 255, 53, 0.5), transparent 17rem),
+    radial-gradient(circle at 78% 42%, rgba(117, 240, 92, 0.42), transparent 18rem),
+    radial-gradient(circle at 50% 78%, rgba(184, 238, 0, 0.2), transparent 22rem),
+    linear-gradient(145deg, rgba(17, 25, 12, 0.94), rgba(4, 7, 5, 0.99));
+}
+
+.login-landing {
+  width: min(1240px, 100%);
+  min-height: min(720px, calc(100vh - 2rem));
+  background:
+    radial-gradient(circle at 15% 18%, rgba(216, 255, 53, 0.18), transparent 20rem),
+    radial-gradient(circle at 78% 45%, rgba(117, 240, 92, 0.16), transparent 22rem),
+    rgba(6, 10, 8, 0.84);
+}
+
+.login-landing::before {
+  background:
+    radial-gradient(ellipse at 18% 48%, rgba(216, 255, 53, 0.86), transparent 22%),
+    radial-gradient(ellipse at 78% 50%, rgba(117, 240, 92, 0.7), transparent 25%),
+    radial-gradient(ellipse at 50% 70%, rgba(184, 238, 0, 0.24), transparent 29%);
+}
+
+.login-nav {
+  grid-template-columns: minmax(210px, 0.8fr) minmax(260px, 340px) minmax(420px, 1.35fr);
+  gap: clamp(1rem, 3vw, 2.5rem);
+}
+
+.login-links {
+  justify-content: flex-end;
+  gap: clamp(1rem, 3.2vw, 2.7rem);
+}
+
+.login-links button {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.88);
+  padding: 0;
+  font: inherit;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.login-links button:hover,
+.login-links button:focus-visible {
+  color: var(--primary);
+  outline: none;
+}
+
+.login-links .login-join {
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.055);
+  padding: 0.45rem 0.9rem;
+}
+
+.login-search span:not(.sr-only) {
+  font-size: 0.95rem;
+}
+
+.login-search span:not(.sr-only)::after {
+  content: "";
+}
+
+.login-access-card {
+  width: min(930px, calc(100% - 2.5rem));
+  grid-template-columns: minmax(230px, 0.95fr) minmax(400px, 1.4fr) minmax(190px, 0.7fr);
+  align-items: center;
+}
+
+.login-access-card .login-form {
+  grid-template-columns: minmax(190px, 1fr) minmax(165px, 0.85fr) minmax(170px, auto);
+  align-items: end;
+}
+
+.login-access-card .login-security-list li {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.login-screen > .login-card {
+  background:
+    radial-gradient(ellipse at 18% 48%, rgba(216, 255, 53, 0.5), transparent 23%),
+    radial-gradient(ellipse at 78% 50%, rgba(117, 240, 92, 0.42), transparent 25%),
+    radial-gradient(ellipse at 50% 70%, rgba(184, 238, 0, 0.18), transparent 30%),
+    rgba(6, 10, 8, 0.84);
 }
 
 .risk-low {

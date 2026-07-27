@@ -16,12 +16,12 @@
   --primary: #d8ff35;
   --primary-strong: #b8ee00;
   --primary-soft: rgba(216, 255, 53, 0.16);
-  --accent: #7dd3fc;
-  --accent-soft: rgba(125, 211, 252, 0.14);
+  --accent: #75f05c;
+  --accent-soft: rgba(117, 240, 92, 0.14);
   --warning: #f8d66d;
   --danger: #ff6b7a;
   --success: #75f05c;
-  --purple: #a78bfa;
+  --green-alt: #b8ee00;
   --shadow: 0 28px 90px rgba(0, 0, 0, 0.45);
   --shadow-soft: 0 18px 48px rgba(0, 0, 0, 0.28);
   --radius-sm: 14px;

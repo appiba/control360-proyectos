@@ -13,7 +13,7 @@ body {
   margin: 0;
   background:
     radial-gradient(circle at 18% 12%, rgba(216, 255, 53, 0.24), transparent 19rem),
-    radial-gradient(circle at 86% 5%, rgba(125, 211, 252, 0.15), transparent 26rem),
+    radial-gradient(circle at 86% 5%, rgba(117, 240, 92, 0.14), transparent 26rem),
     radial-gradient(circle at 58% 92%, rgba(176, 96, 255, 0.11), transparent 32rem),
     linear-gradient(115deg, rgba(86, 68, 45, 0.32), rgba(4, 7, 8, 0.2) 38%, rgba(13, 17, 16, 0.72)),
     var(--bg);
