@@ -61,30 +61,43 @@ export function renderLoginScreen(api, onAuthenticated) {
   const modalRoot = document.querySelector("#modal-root");
   modalRoot.innerHTML = `
     <section class="login-screen" aria-label="Acceso privado CONTROL360">
-      <div class="login-card">
-        <div class="login-card__intro">
-          <div class="brand">
+      <div class="login-landing">
+        <header class="login-nav" aria-label="Navegacion principal">
+          <div class="login-brand">
             <div class="brand__mark" aria-hidden="true">C360</div>
-            <div>
-              <strong>CONTROL360</strong>
-              <span>Acceso privado</span>
-            </div>
+            <strong>CONTROL360</strong>
           </div>
-          <p class="eyebrow">Superadministrador unico</p>
-          <h1>Entra a tu centro patrimonial.</h1>
+          <label class="login-search">
+            <span class="sr-only">Buscar</span>
+            <input type="search" placeholder="Buscar proyectos..." aria-label="Buscar proyectos" />
+            <span aria-hidden="true">⌕</span>
+          </label>
+          <nav class="login-links" aria-label="Enlaces publicos">
+            <a href="#acerca">Acerca</a>
+            <a href="#contacto">Contacto</a>
+            <a href="#faq">FAQ</a>
+            <button class="login-join" type="button">Entrar</button>
+          </nav>
+        </header>
+
+        <div class="login-glow" aria-hidden="true"></div>
+
+        <div class="login-hero">
+          <p class="eyebrow">Centro privado patrimonial</p>
+          <h1>BIENVENIDO</h1>
           <p>
-            Este panel administra proyectos, ingresos, gastos, socios, documentos e informes.
-            El acceso se valida primero con la credencial del propietario y luego con Apps Script.
+            CONTROL360 centraliza patrimonio, proyectos, ingresos, gastos, socios,
+            compras y documentos en una experiencia privada, elegante y ejecutiva.
           </p>
-          <ul class="login-security-list">
-            <li>Clave validada por hash, no en texto visible.</li>
-            <li>Sesion temporal privada.</li>
-            <li>Sin clave escrita en GitHub Pages.</li>
-          </ul>
+          <button class="login-learn" type="button">Acceso privado</button>
         </div>
-        <div class="login-card__form">
-          <p class="eyebrow">Iniciar sesion</p>
-          <h2>Acceso administrador</h2>
+
+        <aside class="login-access-card" aria-label="Acceso administrador">
+          <div>
+            <p class="eyebrow">Iniciar sesion</p>
+            <h2>Acceso administrador</h2>
+            <p>Usa tu credencial de propietario para abrir el dashboard.</p>
+          </div>
           <form class="login-form" id="login-form">
             <label>Correo electronico
               <input name="correo" type="email" autocomplete="username" required placeholder="tu correo administrador" />
@@ -98,7 +111,12 @@ export function renderLoginScreen(api, onAuthenticated) {
             <p class="login-message" id="login-message" role="alert"></p>
             <button class="button" type="submit">Entrar a CONTROL360</button>
           </form>
-        </div>
+          <ul class="login-security-list">
+            <li>Validacion por hash.</li>
+            <li>Sesion privada.</li>
+            <li>Sin clave visible.</li>
+          </ul>
+        </aside>
       </div>
     </section>
   `;
@@ -107,12 +125,17 @@ export function renderLoginScreen(api, onAuthenticated) {
   const message = modalRoot.querySelector("#login-message");
   const passwordInput = modalRoot.querySelector("#password-input");
   const passwordToggle = modalRoot.querySelector("#password-toggle");
+  const learnButton = modalRoot.querySelector(".login-learn");
 
   passwordToggle.addEventListener("click", () => {
     const showing = passwordInput.type === "text";
     passwordInput.type = showing ? "password" : "text";
     passwordToggle.setAttribute("aria-label", showing ? "Mostrar clave" : "Ocultar clave");
     passwordToggle.setAttribute("aria-pressed", String(!showing));
+  });
+
+  learnButton.addEventListener("click", () => {
+    form.querySelector("input[name='correo']")?.focus();
   });
 
   form.addEventListener("submit", async (event) => {

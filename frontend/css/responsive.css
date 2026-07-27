@@ -6,6 +6,27 @@
   .module-grid {
     grid-template-columns: repeat(2, minmax(190px, 1fr));
   }
+
+  .login-nav {
+    grid-template-columns: 1fr auto;
+  }
+
+  .login-search {
+    display: none;
+  }
+
+  .login-access-card {
+    grid-template-columns: 1fr;
+    position: relative;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    margin: 3rem auto 1.25rem;
+  }
+
+  .login-access-card .login-form {
+    grid-template-columns: 1fr 1fr auto;
+  }
 }
 
 @media (max-width: 900px) {
@@ -87,6 +108,47 @@
   .login-card {
     grid-template-columns: 1fr;
     border-radius: 28px;
+  }
+
+  .login-landing {
+    min-height: calc(100vh - 1.3rem);
+  }
+
+  .login-nav {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 0.85rem;
+  }
+
+  .login-links {
+    width: 100%;
+    justify-content: center;
+    gap: 1rem;
+    font-size: 0.72rem;
+  }
+
+  .login-hero {
+    margin-top: 2.25rem;
+  }
+
+  .login-hero h1 {
+    font-size: clamp(2.35rem, 12vw, 4rem);
+    letter-spacing: 0.12em;
+    text-indent: 0.12em;
+  }
+
+  .login-access-card {
+    width: calc(100% - 1.5rem);
+    margin-top: 2rem;
+    border-radius: 22px;
+  }
+
+  .login-access-card .login-form {
+    grid-template-columns: 1fr;
+  }
+
+  .login-access-card .button {
+    width: 100%;
   }
 }
 
