@@ -1,5 +1,5 @@
 import { getState } from "../state.js";
-import { renderDashboardCharts } from "../charts.js?v=phase2-owner-login-v2-20260727";
+import { renderDashboardCharts } from "../charts.js?v=phase2-users-local-v1-20260727";
 import { formatCurrency, formatPercent, getProjectFinancials, groupBy, sumBy } from "../utils.js";
 
 export function renderDashboard(container) {

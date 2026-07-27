@@ -14,22 +14,29 @@ import {
 import { normalizeText } from "./utils.js";
 import { EXPENSE_CATALOG } from "./modules/expenses.js";
 
+const APPS_SCRIPT_TIMEOUT_MS = 15000;
+
 function response(ok, data = {}, message = "", errors = []) {
   return { ok, data, message, errors };
 }
 
 async function request(action, payload = {}) {
-  if (!isBackendConfigured()) {
+  const session = getStoredSession();
+  if (!isBackendConfigured() || shouldUseLocalAction(action, payload, session)) {
     return handleLocalAction(action, payload);
   }
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), APPS_SCRIPT_TIMEOUT_MS);
+
   try {
-    const sessionToken = getStoredSessionToken();
+    const sessionToken = session?.token || "";
     const result = await fetch(CONFIG.appsScriptUrl, {
       method: "POST",
       headers: {
         "Content-Type": "text/plain;charset=utf-8",
       },
+      signal: controller.signal,
       body: JSON.stringify({ action, payload, sessionToken }),
     });
 
@@ -43,18 +50,41 @@ async function request(action, payload = {}) {
     if (parsed.ok) applyBackendMutation(action, parsed.data);
     return parsed;
   } catch (error) {
+    if (error.name === "AbortError") {
+      return response(false, {}, "Apps Script no respondio a tiempo. Intenta otra vez.", [
+        "APPS_SCRIPT_TIMEOUT",
+      ]);
+    }
     return response(false, {}, "Error de conexion con Apps Script.", [error.message]);
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
-function getStoredSessionToken() {
+function getStoredSession() {
   try {
     const stored = localStorage.getItem(CONFIG.sessionKey);
-    if (!stored) return "";
-    return JSON.parse(stored)?.token || "";
+    if (!stored) return null;
+    return JSON.parse(stored);
   } catch {
-    return "";
+    return null;
   }
+}
+
+function shouldUseLocalAction(action, payload, session) {
+  if (isLocalOwnerSession(session) && action !== "login") return true;
+  if (action === "confirmarCorreo" && hasLocalInvitationCode(payload?.codigo)) return true;
+  return false;
+}
+
+function isLocalOwnerSession(session) {
+  return session?.mode === "owner-local" || String(session?.token || "").startsWith("owner-local:");
+}
+
+function hasLocalInvitationCode(code) {
+  if (!code) return false;
+  const state = getState();
+  return Boolean((state.invitations || []).some((invitation) => invitation.activationCode === code));
 }
 
 function applyBackendMutation(action, data) {
