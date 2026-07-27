@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="./css/components.css" />
     <link rel="stylesheet" href="./css/responsive.css" />
   </head>
-  <body>
+  <body class="auth-locked">
     <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
 
     <div class="app-shell" data-sidebar-state="closed">
@@ -65,8 +65,11 @@
             </button>
             <div class="user-pill" aria-label="Usuario activo">
               <span class="status-dot"></span>
-              Superadmin
+              <span id="session-user-label">Superadmin</span>
             </div>
+            <button class="button button--ghost" id="logout-button" type="button">
+              Salir
+            </button>
           </div>
         </header>
 

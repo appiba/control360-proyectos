@@ -9,6 +9,7 @@ Esta primera versión implementa la Fase 1: frontend estático compatible con Gi
 Funcional hoy:
 
 - Dashboard oscuro responsive con KPIs financieros y gráficos demo.
+- Pantalla de login para superadministrador único, validada por Apps Script.
 - Navegación lateral para todos los módulos solicitados.
 - Pantalla de proyectos con creación, listado, estados, tipos y detalle básico.
 - Módulos visuales de ingresos, gastos, socios, compras, proveedores, documentos, historial y configuración.
@@ -22,6 +23,7 @@ Configuración actual:
 
 - URL de Apps Script configurada en [frontend/js/config.js](frontend/js/config.js).
 - Endpoint actual: `https://script.google.com/macros/s/AKfycbzDRErOe09jRa5vV4VUFmvr5a39BBPZoX-dC77-gcNzQbDVL9qEUBQgMPDFm2UXERsE/exec`
+- El usuario y la clave del superadministrador se configuran en `PropertiesService`, no en GitHub.
 
 Pendiente de configuración manual:
 
@@ -70,11 +72,13 @@ Las pruebas actuales verifican cálculos financieros críticos, validación de p
 3. Verifica que `CONTROL360_CONFIG.SPREADSHEET_ID` apunte a:
    `1zi4nLceMyUTRLdDftHF2hWWbCxAL42EnfcNu56u2d_Q`
 4. Ejecuta manualmente `setupDatabase()` una vez y concede permisos.
-5. Despliega como aplicación web:
+5. Configura las propiedades privadas `CONTROL360_SUPERADMIN_EMAIL` y `CONTROL360_SUPERADMIN_TEMP_PASSWORD`.
+6. Ejecuta manualmente `configurarSuperadminInicial()` para guardar hash/sal y eliminar la clave temporal.
+7. Despliega como aplicación web:
    - Ejecutar como: propietario.
    - Acceso: solo usuarios autorizados, o el alcance privado que definas.
-6. Copia la URL terminada en `/exec`.
-7. Si el despliegue cambia, actualiza `APPS_SCRIPT_URL` dentro de [frontend/js/config.js](frontend/js/config.js).
+8. Copia la URL terminada en `/exec`.
+9. Si el despliegue cambia, actualiza `APPS_SCRIPT_URL` dentro de [frontend/js/config.js](frontend/js/config.js).
 
 Mientras `APPS_SCRIPT_URL = ""`, la aplicación muestra un aviso claro y trabaja en modo demo local. En esta rama ya está configurada la URL enviada por el propietario.
 

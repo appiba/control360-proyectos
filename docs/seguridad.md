@@ -16,7 +16,16 @@ CONTROL360 manejará información patrimonial sensible. La seguridad se diseña 
 
 ## Autenticación inicial
 
-Fase 1 incluye una sesión demo visual para el superadministrador, pero no debe considerarse seguridad real.
+El acceso del superadministrador se valida en Apps Script. El frontend no contiene la clave ni hashes.
+
+Configuración privada esperada en `PropertiesService`:
+
+- `CONTROL360_SUPERADMIN_EMAIL`.
+- `CONTROL360_SUPERADMIN_TEMP_PASSWORD`, solo temporal.
+- `CONTROL360_SUPERADMIN_PASSWORD_HASH`, generado por `configurarSuperadminInicial()`.
+- `CONTROL360_SUPERADMIN_PASSWORD_SALT`, generado por `configurarSuperadminInicial()`.
+
+Después de ejecutar `configurarSuperadminInicial()`, la propiedad temporal `CONTROL360_SUPERADMIN_TEMP_PASSWORD` se elimina.
 
 Fase 2 debe implementar:
 

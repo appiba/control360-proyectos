@@ -27,7 +27,7 @@ var SHEET_SCHEMAS = {
   Documentos: ["id", "proyectoId", "categoria", "nombre", "urlPrivadaDrive", "usuarioSubio", "fecha", "version", "permisos", "estado", "creadoEn"],
   Informes: ["id", "proyectoId", "tipo", "version", "urlPrivadaDrive", "estado", "generadoPor", "generadoEn", "enviadoA", "descargadoPor", "descargadoEn", "lecturaConfirmadaEn"],
   Historial: ["id", "usuario", "proyectoId", "modulo", "accion", "campo", "valorAnterior", "valorNuevo", "fecha", "hora", "sesionId", "observacion"],
-  Sesiones: ["id", "usuarioId", "correo", "estado", "creadoEn", "ultimoAcceso", "venceEn"],
+  Sesiones: ["id", "tokenHash", "usuarioId", "correo", "estado", "creadoEn", "ultimoAcceso", "venceEn"],
   Notificaciones: ["id", "usuarioId", "proyectoId", "tipo", "mensaje", "canal", "estado", "enviadoEn", "leidoEn", "metadata"]
 };
 

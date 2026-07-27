@@ -78,5 +78,9 @@
     flex-direction: column-reverse;
     align-items: stretch;
   }
+
+  .login-card {
+    grid-template-columns: 1fr;
+  }
 }
 

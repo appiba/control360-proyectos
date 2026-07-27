@@ -1,5 +1,11 @@
-import { isBackendConfigured } from "./api.js";
-import { getSession } from "./auth.js";
+import { api, isBackendConfigured } from "./api.js";
+import {
+  clearSession,
+  ensureAuthenticated,
+  getSession,
+  renderLoginScreen,
+  updateSessionBadge,
+} from "./auth.js";
 import { exportCurrentView } from "./reports.js";
 import { getCurrentPath, refreshRoute, registerRoute, startRouter } from "./router.js";
 import { getState, subscribe } from "./state.js";
@@ -20,6 +26,10 @@ import { renderHistory } from "./modules/history.js";
 import { renderSettings } from "./modules/settings.js";
 
 const viewRoot = document.querySelector("#view-root");
+let chromeReady = false;
+let routesReady = false;
+let routerReady = false;
+let subscriptionReady = false;
 
 function mount(renderer) {
   renderer(viewRoot);
@@ -27,6 +37,7 @@ function mount(renderer) {
 }
 
 function registerRoutes() {
+  if (routesReady) return;
   registerRoute("/dashboard", () => mount(renderDashboard), "Dashboard");
   registerRoute("/proyectos", () => mount(renderProjects), "Proyectos");
   registerRoute("/proyectos/:id", (params) => mount((container) => renderProjectDetail(container, params.id)), "Detalle de proyecto");
@@ -47,17 +58,24 @@ function registerRoutes() {
   registerRoute("/alertas", () => mount((container) => renderDocuments(container, "Alertas")), "Alertas");
   registerRoute("/historial", () => mount(renderHistory), "Historial");
   registerRoute("/configuracion", () => mount(renderSettings), "Configuración");
+  routesReady = true;
 }
 
 function setupChrome() {
+  if (chromeReady) {
+    updateSessionBadge();
+    return;
+  }
   getSession();
 
   const shell = document.querySelector(".app-shell");
   const sidebarToggle = document.querySelector("#sidebar-toggle");
   const configWarning = document.querySelector("#config-warning");
   const exportButton = document.querySelector("#export-current-view");
+  const logoutButton = document.querySelector("#logout-button");
 
   configWarning.hidden = isBackendConfigured();
+  updateSessionBadge();
 
   sidebarToggle.addEventListener("click", () => {
     const next = shell.dataset.sidebarState === "open" ? "closed" : "open";
@@ -76,12 +94,32 @@ function setupChrome() {
     exportCurrentView(title, getState());
     toast("Exportación preliminar generada.");
   });
+
+  logoutButton.addEventListener("click", async () => {
+    const session = getSession();
+    if (session?.token) await api.logout(session.token);
+    clearSession();
+    toast("Sesión cerrada.");
+    renderLoginScreen(api, startAuthenticatedApp);
+  });
+
+  chromeReady = true;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function startAuthenticatedApp() {
   setupChrome();
   registerRoutes();
-  startRouter();
+  if (!routerReady) {
+    startRouter();
+    routerReady = true;
+  } else {
+    refreshRoute();
+  }
+
+  if (subscriptionReady) {
+    refreshRoute();
+    return;
+  }
 
   let lastPath = getCurrentPath();
   subscribe(() => {
@@ -91,4 +129,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     lastPath = nextPath;
   });
+  subscriptionReady = true;
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  document.body.classList.add("auth-locked");
+  const authenticated = await ensureAuthenticated(api);
+  if (authenticated) {
+    document.body.classList.remove("auth-locked");
+    startAuthenticatedApp();
+    return;
+  }
+  renderLoginScreen(api, startAuthenticatedApp);
 });

@@ -19,8 +19,11 @@ function dispatchAction_(action, payload, context) {
     case "setupDatabase":
       return setupDatabase_(context);
     case "login":
+      return login_(payload, context);
     case "validarSesion":
       return validarSesion_(payload, context);
+    case "cerrarSesion":
+      return cerrarSesion_(payload, context);
     case "confirmarCorreo":
       return confirmarCorreo_(payload, context);
     case "solicitarAcceso":

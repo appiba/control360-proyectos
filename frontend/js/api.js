@@ -55,6 +55,19 @@ function handleLocalAction(action, payload) {
     case "setupDatabase":
       return response(true, {}, "setupDatabase se ejecuta en Apps Script, no en modo demo.");
 
+    case "login":
+      return response(false, {}, "Configura Apps Script para usar el acceso seguro.", [
+        "BACKEND_REQUIRED",
+      ]);
+
+    case "validarSesion":
+      return response(false, {}, "No hay sesión de backend en modo demo.", [
+        "BACKEND_REQUIRED",
+      ]);
+
+    case "cerrarSesion":
+      return response(true, {}, "Sesión local cerrada.");
+
     case "listarProyectos":
       return response(true, state.projects);
 
@@ -123,6 +136,9 @@ export const api = {
   request,
   healthCheck: () => request("healthCheck"),
   setupDatabase: () => request("setupDatabase"),
+  login: (credentials) => request("login", credentials),
+  validateSession: (token) => request("validarSesion", { token }),
+  logout: (token) => request("cerrarSesion", { token }),
   listProjects: () => request("listarProyectos"),
   getProject: (id) => request("obtenerProyecto", { id }),
   createProject: (project) => request("crearProyecto", project),
