@@ -479,6 +479,40 @@ tr:hover td {
   gap: 0.85rem;
 }
 
+.password-field {
+  position: relative;
+  display: block;
+}
+
+.password-field input {
+  padding-right: 3.1rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.45rem;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.password-toggle:hover,
+.password-toggle:focus-visible {
+  border-color: var(--border);
+  background: var(--surface-muted);
+  color: var(--text);
+  outline: none;
+}
+
 .login-message {
   min-height: 1.25rem;
   color: #fecdd3;

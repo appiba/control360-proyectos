@@ -74,12 +74,12 @@ export function renderLoginScreen(api, onAuthenticated) {
           <h1>Entra a tu centro patrimonial.</h1>
           <p>
             Este panel administra proyectos, ingresos, gastos, socios, documentos e informes.
-            El acceso se valida con Apps Script o con el respaldo seguro del propietario.
+            El acceso se valida primero con la credencial del propietario y luego con Apps Script.
           </p>
           <ul class="login-security-list">
             <li>Clave validada por hash, no en texto visible.</li>
             <li>Sesion temporal privada.</li>
-            <li>Sin claves en GitHub Pages.</li>
+            <li>Sin clave escrita en GitHub Pages.</li>
           </ul>
         </div>
         <div class="login-card__form">
@@ -90,7 +90,10 @@ export function renderLoginScreen(api, onAuthenticated) {
               <input name="correo" type="email" autocomplete="username" required placeholder="tu correo administrador" />
             </label>
             <label>Clave
-              <input name="password" type="password" autocomplete="current-password" required placeholder="Clave privada" />
+              <span class="password-field">
+                <input id="password-input" name="password" type="password" autocomplete="current-password" inputmode="numeric" required placeholder="Clave privada" />
+                <button class="password-toggle" id="password-toggle" type="button" aria-label="Mostrar clave" aria-pressed="false">👁</button>
+              </span>
             </label>
             <p class="login-message" id="login-message" role="alert"></p>
             <button class="button" type="submit">Entrar a CONTROL360</button>
@@ -102,16 +105,34 @@ export function renderLoginScreen(api, onAuthenticated) {
 
   const form = modalRoot.querySelector("#login-form");
   const message = modalRoot.querySelector("#login-message");
+  const passwordInput = modalRoot.querySelector("#password-input");
+  const passwordToggle = modalRoot.querySelector("#password-toggle");
+
+  passwordToggle.addEventListener("click", () => {
+    const showing = passwordInput.type === "text";
+    passwordInput.type = showing ? "password" : "text";
+    passwordToggle.setAttribute("aria-label", showing ? "Mostrar clave" : "Ocultar clave");
+    passwordToggle.setAttribute("aria-pressed", String(!showing));
+  });
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const submitButton = form.querySelector("button[type='submit']");
     const formData = Object.fromEntries(new FormData(form).entries());
     const correo = String(formData.correo || "").trim();
-    const password = String(formData.password || "");
+    const password = normalizePassword(formData.password);
 
     submitButton.disabled = true;
     submitButton.textContent = "Validando...";
     message.textContent = "";
+
+    const localOwnerSession = await createLocalOwnerSession(correo, password);
+    if (localOwnerSession) {
+      submitButton.disabled = false;
+      submitButton.textContent = "Entrar a CONTROL360";
+      openSession(localOwnerSession, modalRoot, onAuthenticated);
+      return;
+    }
 
     const result = await api.login({ correo, password });
 
@@ -124,12 +145,6 @@ export function renderLoginScreen(api, onAuthenticated) {
         expiresAt: result.data.venceEn,
         usuario: result.data.usuario,
       }, modalRoot, onAuthenticated);
-      return;
-    }
-
-    const localOwnerSession = await createLocalOwnerSession(correo, password);
-    if (localOwnerSession) {
-      openSession(localOwnerSession, modalRoot, onAuthenticated);
       return;
     }
 
@@ -214,6 +229,10 @@ function normalizeEmail(value) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+}
+
+function normalizePassword(value) {
+  return String(value || "").trim();
 }
 
 function constantTimeEquals(a, b) {
