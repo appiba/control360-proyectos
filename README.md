@@ -23,7 +23,7 @@ Configuración actual:
 
 - URL de Apps Script configurada en [frontend/js/config.js](frontend/js/config.js).
 - Endpoint actual: `https://script.google.com/macros/s/AKfycbzDRErOe09jRa5vV4VUFmvr5a39BBPZoX-dC77-gcNzQbDVL9qEUBQgMPDFm2UXERsE/exec`
-- El usuario y la clave del superadministrador se configuran en `PropertiesService`, no en GitHub.
+- El acceso del propietario queda preconfigurado en Apps Script con hash; no hay clave en texto ni en el frontend.
 
 Pendiente de configuración manual:
 
@@ -72,13 +72,13 @@ Las pruebas actuales verifican cálculos financieros críticos, validación de p
 3. Verifica que `CONTROL360_CONFIG.SPREADSHEET_ID` apunte a:
    `1zi4nLceMyUTRLdDftHF2hWWbCxAL42EnfcNu56u2d_Q`
 4. Ejecuta manualmente `setupDatabase()` una vez y concede permisos.
-5. Configura las propiedades privadas `CONTROL360_SUPERADMIN_EMAIL` y `CONTROL360_SUPERADMIN_TEMP_PASSWORD`.
-6. Ejecuta manualmente `configurarSuperadminInicial()` para guardar hash/sal y eliminar la clave temporal.
-7. Despliega como aplicación web:
+5. Despliega como aplicación web:
    - Ejecutar como: propietario.
    - Acceso: solo usuarios autorizados, o el alcance privado que definas.
-8. Copia la URL terminada en `/exec`.
-9. Si el despliegue cambia, actualiza `APPS_SCRIPT_URL` dentro de [frontend/js/config.js](frontend/js/config.js).
+6. Copia la URL terminada en `/exec`.
+7. Si el despliegue cambia, actualiza `APPS_SCRIPT_URL` dentro de [frontend/js/config.js](frontend/js/config.js).
+
+La credencial inicial del propietario ya queda validada por hash en Apps Script. Si en el futuro quieres rotarla sin cambiar código, puedes configurar `CONTROL360_SUPERADMIN_EMAIL` y `CONTROL360_SUPERADMIN_TEMP_PASSWORD`, ejecutar `configurarSuperadminInicial()` y desplegar una nueva versión.
 
 Mientras `APPS_SCRIPT_URL = ""`, la aplicación muestra un aviso claro y trabaja en modo demo local. En esta rama ya está configurada la URL enviada por el propietario.
 

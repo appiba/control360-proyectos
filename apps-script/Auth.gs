@@ -23,9 +23,11 @@ function configurarSuperadminInicial_(context) {
   }
 
   var salt = uuid_() + uuid_();
-  var passwordHash = hashSecret_(salt + ":" + tempPassword);
+  var rounds = CONTROL360_CONFIG.OWNER_PASSWORD_ROUNDS;
+  var passwordHash = hashPassword_(tempPassword, salt, rounds);
   props.setProperty(CONTROL360_CONFIG.SUPERADMIN_PASSWORD_SALT_PROPERTY, salt);
   props.setProperty(CONTROL360_CONFIG.SUPERADMIN_PASSWORD_HASH_PROPERTY, passwordHash);
+  props.setProperty(CONTROL360_CONFIG.SUPERADMIN_PASSWORD_ROUNDS_PROPERTY, String(rounds));
   props.deleteProperty(CONTROL360_CONFIG.SUPERADMIN_TEMP_PASSWORD_PROPERTY);
 
   var user = ensureSuperadminUser_(email);
@@ -53,14 +55,14 @@ function login_(payload, context) {
     ]);
   }
 
-  if (normalize_(email) !== normalize_(authConfig.email) || !verifyPassword_(password, authConfig)) {
+  if (!emailMatchesAuthConfig_(email, authConfig) || !verifyPassword_(password, authConfig)) {
     audit_("Usuarios", "loginFallido", "", "", "Intento invalido", context, email);
     return fail_("Correo o clave incorrectos.", ["INVALID_CREDENTIALS"]);
   }
 
-  var user = ensureSuperadminUser_(authConfig.email);
+  var user = ensureSuperadminUser_(authConfig.email || email);
   var session = createAuthSession_(user);
-  audit_("Usuarios", "login", "", "", "Sesion iniciada", context, authConfig.email);
+  audit_("Usuarios", "login", "", "", "Sesion iniciada", context, user.correo);
 
   return ok_({
     usuario: publicUser_(user),
@@ -161,20 +163,46 @@ function invitarUsuario_(payload, context) {
 }
 
 function getAuthConfig_() {
+  var ownerConfig = getOwnerAuthConfig_();
+  if (ownerConfig.ready) return ownerConfig;
+
   var props = PropertiesService.getScriptProperties();
   var email = String(props.getProperty(CONTROL360_CONFIG.SUPERADMIN_EMAIL_PROPERTY) || "").trim().toLowerCase();
   var salt = props.getProperty(CONTROL360_CONFIG.SUPERADMIN_PASSWORD_SALT_PROPERTY);
   var passwordHash = props.getProperty(CONTROL360_CONFIG.SUPERADMIN_PASSWORD_HASH_PROPERTY);
+  var rounds = Number(props.getProperty(CONTROL360_CONFIG.SUPERADMIN_PASSWORD_ROUNDS_PROPERTY) || 1);
   return {
     email: email,
     salt: salt,
     passwordHash: passwordHash,
+    rounds: rounds,
     ready: Boolean(email && salt && passwordHash)
   };
 }
 
+function getOwnerAuthConfig_() {
+  return {
+    emailHash: CONTROL360_CONFIG.OWNER_EMAIL_HASH,
+    salt: CONTROL360_CONFIG.OWNER_PASSWORD_SALT,
+    passwordHash: CONTROL360_CONFIG.OWNER_PASSWORD_HASH,
+    rounds: CONTROL360_CONFIG.OWNER_PASSWORD_ROUNDS,
+    ready: Boolean(
+      CONTROL360_CONFIG.OWNER_EMAIL_HASH &&
+      CONTROL360_CONFIG.OWNER_PASSWORD_SALT &&
+      CONTROL360_CONFIG.OWNER_PASSWORD_HASH
+    )
+  };
+}
+
+function emailMatchesAuthConfig_(email, authConfig) {
+  if (authConfig.emailHash) {
+    return constantTimeEquals_(hashSecret_(normalize_(email)), authConfig.emailHash);
+  }
+  return normalize_(email) === normalize_(authConfig.email);
+}
+
 function verifyPassword_(password, authConfig) {
-  var candidate = hashSecret_(authConfig.salt + ":" + password);
+  var candidate = hashPassword_(password, authConfig.salt, authConfig.rounds);
   return constantTimeEquals_(candidate, authConfig.passwordHash);
 }
 
@@ -262,6 +290,15 @@ function hashSecret_(value) {
     Utilities.Charset.UTF_8
   );
   return Utilities.base64Encode(bytes);
+}
+
+function hashPassword_(password, salt, rounds) {
+  var current = String(salt) + ":" + String(password);
+  var count = Math.max(Number(rounds || 1), 1);
+  for (var index = 0; index < count; index++) {
+    current = hashSecret_(current);
+  }
+  return current;
 }
 
 function constantTimeEquals_(a, b) {

@@ -28,18 +28,18 @@ Pasos:
 1. Abrir el proyecto de Apps Script indicado.
 2. Copiar todos los archivos `.gs` y `appsscript.json` desde `apps-script/`.
 3. Ejecutar `setupDatabase()`.
-4. Configurar las propiedades privadas `CONTROL360_SUPERADMIN_EMAIL` y `CONTROL360_SUPERADMIN_TEMP_PASSWORD`.
-5. Ejecutar `configurarSuperadminInicial()` para guardar hash/sal y borrar la clave temporal.
-6. Revisar las hojas creadas en Google Sheets.
-7. Desplegar como aplicación web.
-8. Copiar la URL terminada en `/exec`.
-9. Si cambia el despliegue, pegarla en:
+4. Revisar las hojas creadas en Google Sheets.
+5. Desplegar como aplicación web.
+6. Copiar la URL terminada en `/exec`.
+7. Si cambia el despliegue, pegarla en:
 
 ```js
 export const APPS_SCRIPT_URL = "";
 ```
 
 ubicado en `frontend/js/config.js`. La URL actual ya está configurada.
+
+La credencial inicial del propietario ya queda preconfigurada por hash en Apps Script. No se debe escribir la clave en el frontend.
 
 Ejemplo del cambio esperado, sin inventar una URL:
 
