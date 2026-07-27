@@ -8,16 +8,18 @@
   }
 
   .login-nav {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 200px minmax(220px, 270px) minmax(330px, 1fr);
+    gap: 1rem;
   }
 
-  .login-search {
-    display: none;
+  .login-links {
+    gap: 0.85rem;
+    font-size: 0.74rem;
   }
 
   .login-access-card {
-    width: min(800px, calc(100% - 2rem));
-    grid-template-columns: minmax(205px, 0.75fr) minmax(430px, 1.25fr);
+    width: min(1000px, calc(100% - 2rem));
+    grid-template-columns: minmax(245px, 0.72fr) minmax(600px, 1.28fr);
     position: relative;
     left: auto;
     bottom: auto;
@@ -26,7 +28,7 @@
   }
 
   .login-access-card .login-form {
-    grid-template-columns: minmax(175px, 1fr) minmax(150px, 0.8fr) minmax(145px, auto);
+    grid-template-columns: minmax(220px, 1fr) minmax(170px, 0.8fr) 86px;
   }
 }
 

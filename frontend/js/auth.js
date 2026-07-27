@@ -103,8 +103,8 @@ export function renderLoginScreen(api, onAuthenticated) {
             <p>Solo el propietario entra ahora. Socios queda listo para invitaciones.</p>
           </div>
           <form class="login-form" id="login-form">
-            <label>Correo electronico
-              <input name="correo" type="email" autocomplete="username" required placeholder="tu correo administrador" />
+            <label>Usuario
+              <input name="correo" type="email" autocomplete="username" required placeholder="usuario administrador" />
             </label>
             <label>Clave
               <span class="password-field">
@@ -113,7 +113,7 @@ export function renderLoginScreen(api, onAuthenticated) {
               </span>
             </label>
             <p class="login-message" id="login-message" role="alert"></p>
-            <button class="button" type="submit">Entrar a CONTROL360</button>
+            <button class="button login-submit" type="submit">Login</button>
           </form>
           <ul class="login-security-list">
             <li>Administrador unico.</li>
@@ -161,13 +161,13 @@ export function renderLoginScreen(api, onAuthenticated) {
     const password = normalizePassword(formData.password);
 
     submitButton.disabled = true;
-    submitButton.textContent = "Validando...";
+    submitButton.textContent = "...";
     message.textContent = "";
 
     const localOwnerSession = await createLocalOwnerSession(correo, password);
     if (localOwnerSession) {
       submitButton.disabled = false;
-      submitButton.textContent = "Entrar a CONTROL360";
+      submitButton.textContent = "Login";
       openSession(localOwnerSession, modalRoot, onAuthenticated);
       return;
     }
@@ -175,7 +175,7 @@ export function renderLoginScreen(api, onAuthenticated) {
     const result = await api.login({ correo, password });
 
     submitButton.disabled = false;
-    submitButton.textContent = "Entrar a CONTROL360";
+    submitButton.textContent = "Login";
 
     if (result.ok && result.data?.token) {
       openSession({

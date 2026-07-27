@@ -1140,3 +1140,43 @@ tr:hover td {
   content: "CONTROL360        Buscar proyectos...        PROYECTOS        EVENTOS        SOCIOS        CONTACTO        ENTRAR";
 }
 
+/* Login row alignment: title + usuario + clave + compact login button in one line. */
+.login-nav {
+  grid-template-columns: minmax(250px, 0.9fr) minmax(240px, 300px) minmax(500px, 1.25fr);
+}
+
+.login-search input {
+  min-height: 34px;
+}
+
+.login-access-card {
+  width: min(1040px, calc(100% - 2.5rem));
+  grid-template-columns: minmax(260px, 0.75fr) minmax(650px, 1.25fr);
+  gap: 1rem;
+  padding: 0.78rem 0.95rem;
+}
+
+.login-access-card .login-form {
+  grid-template-columns: minmax(230px, 1fr) minmax(190px, 0.85fr) 86px;
+  gap: 0.72rem;
+  align-items: end;
+}
+
+.login-access-card .login-form label {
+  font-size: 0.76rem;
+}
+
+.login-access-card input {
+  min-height: 40px;
+  border-radius: 14px;
+}
+
+.login-access-card .button.login-submit {
+  min-width: 0;
+  width: 86px;
+  min-height: 40px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
