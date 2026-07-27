@@ -18,10 +18,16 @@ Funcional hoy:
 - Backend Apps Script inicial con `doGet`, `doPost`, router central, `healthCheck`, `setupDatabase`, CRUD base de proyectos, ingresos y gastos, auditoría básica y catálogo.
 - Pruebas unitarias de fórmulas financieras y validación.
 
+Configuración actual:
+
+- URL de Apps Script configurada en [frontend/js/config.js](frontend/js/config.js).
+- Endpoint actual: `https://script.google.com/macros/s/AKfycbzDRErOe09jRa5vV4VUFmvr5a39BBPZoX-dC77-gcNzQbDVL9qEUBQgMPDFm2UXERsE/exec`
+
 Pendiente de configuración manual:
 
-- Desplegar Google Apps Script como aplicación web.
-- Pegar la URL terminada en `/exec` en [frontend/js/config.js](frontend/js/config.js).
+- Cargar los archivos de [apps-script](apps-script) dentro del proyecto de Google Apps Script.
+- Ejecutar `setupDatabase()` desde Apps Script.
+- Volver a probar `healthCheck` en el endpoint `/exec`.
 - Activar GitHub Pages desde la carpeta `/frontend`.
 - Conceder permisos de escritura al repo si se desea que Codex pueda empujar la rama y abrir el PR automáticamente.
 
@@ -68,9 +74,9 @@ Las pruebas actuales verifican cálculos financieros críticos, validación de p
    - Ejecutar como: propietario.
    - Acceso: solo usuarios autorizados, o el alcance privado que definas.
 6. Copia la URL terminada en `/exec`.
-7. Pega esa URL en `APPS_SCRIPT_URL` dentro de [frontend/js/config.js](frontend/js/config.js).
+7. Si el despliegue cambia, actualiza `APPS_SCRIPT_URL` dentro de [frontend/js/config.js](frontend/js/config.js).
 
-Mientras `APPS_SCRIPT_URL = ""`, la aplicación muestra un aviso claro y trabaja en modo demo local.
+Mientras `APPS_SCRIPT_URL = ""`, la aplicación muestra un aviso claro y trabaja en modo demo local. En esta rama ya está configurada la URL enviada por el propietario.
 
 ## Activar GitHub Pages
 
