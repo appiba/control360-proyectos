@@ -1,11 +1,11 @@
-import { api, isBackendConfigured } from "./api.js";
+import { api, isBackendConfigured } from "./api.js?v=owner-login-20260727";
 import {
   clearSession,
   ensureAuthenticated,
   getSession,
   renderLoginScreen,
   updateSessionBadge,
-} from "./auth.js";
+} from "./auth.js?v=owner-login-20260727";
 import { exportCurrentView } from "./reports.js";
 import { getCurrentPath, refreshRoute, registerRoute, startRouter } from "./router.js";
 import { getState, subscribe } from "./state.js";
