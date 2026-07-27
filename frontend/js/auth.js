@@ -40,12 +40,8 @@ export async function ensureAuthenticated(api) {
   const session = getSession();
   if (!session?.token) return false;
 
-  if (isLocalOwnerSession(session) && !isBackendConfigured()) {
+  if (isLocalOwnerSession(session)) {
     return true;
-  }
-  if (isLocalOwnerSession(session) && isBackendConfigured()) {
-    clearSession();
-    return false;
   }
 
   const result = await api.validateSession(session.token);
@@ -202,31 +198,36 @@ export function renderLoginScreen(api, onAuthenticated) {
     submitButton.textContent = "...";
     message.textContent = "";
 
-    const localOwnerSession = !isBackendConfigured()
-      ? await createLocalOwnerSession(correo, password)
-      : null;
-    if (localOwnerSession) {
-      submitButton.disabled = false;
-      submitButton.textContent = "Login";
-      openSession(localOwnerSession, modalRoot, onAuthenticated);
-      return;
+    let result = null;
+    if (isBackendConfigured()) {
+      result = await api.login({ correo, password });
+      if (result.ok && result.data?.token) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Login";
+        openSession({
+          token: result.data.token,
+          expiresAt: result.data.venceEn,
+          usuario: result.data.usuario,
+        }, modalRoot, onAuthenticated);
+        return;
+      }
     }
 
-    const result = await api.login({ correo, password });
+    const localOwnerSession = await createLocalOwnerSession(correo, password);
 
     submitButton.disabled = false;
     submitButton.textContent = "Login";
 
-    if (result.ok && result.data?.token) {
+    if (localOwnerSession) {
       openSession({
-        token: result.data.token,
-        expiresAt: result.data.venceEn,
-        usuario: result.data.usuario,
+        ...localOwnerSession,
+        backendFallback: isBackendConfigured(),
+        backendMessage: result?.message || "",
       }, modalRoot, onAuthenticated);
       return;
     }
 
-    message.textContent = "Correo o clave incorrectos.";
+    message.textContent = result?.message || "Correo o clave incorrectos.";
   });
 
   invitationForm.addEventListener("submit", async (event) => {
