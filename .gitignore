@@ -1,0 +1,22 @@
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Dependencias / herramientas locales
+node_modules/
+.cache/
+.tmp/
+coverage/
+
+# Archivos locales sensibles
+.env
+.env.*
+!.env.example
+
+# Apps Script / clasp
+.clasp.json
+
+# Logs
+*.log
+npm-debug.log*
+

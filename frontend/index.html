@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="CONTROL360: aplicación privada de gestión patrimonial y financiera personal."
+    />
+    <title>CONTROL360 | Gestión patrimonial</title>
+    <link rel="stylesheet" href="./css/variables.css" />
+    <link rel="stylesheet" href="./css/base.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+    <link rel="stylesheet" href="./css/responsive.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
+    <div class="app-shell" data-sidebar-state="closed">
+      <aside class="sidebar" aria-label="Menú principal">
+        <div class="brand">
+          <div class="brand__mark" aria-hidden="true">C360</div>
+          <div>
+            <strong>CONTROL360</strong>
+            <span>Patrimonio & proyectos</span>
+          </div>
+        </div>
+
+        <nav class="sidebar__nav" id="main-nav">
+          <a href="#/dashboard" data-route="/dashboard" class="nav-link active">Dashboard</a>
+          <a href="#/proyectos" data-route="/proyectos" class="nav-link">Proyectos</a>
+          <a href="#/eventos" data-route="/eventos" class="nav-link">Eventos</a>
+          <a href="#/negocios" data-route="/negocios" class="nav-link">Negocios</a>
+          <a href="#/inversiones" data-route="/inversiones" class="nav-link">Inversiones</a>
+          <a href="#/activos" data-route="/activos" class="nav-link">Activos</a>
+          <a href="#/patrimonio" data-route="/patrimonio" class="nav-link">Patrimonio</a>
+          <a href="#/ingresos" data-route="/ingresos" class="nav-link">Ingresos</a>
+          <a href="#/gastos" data-route="/gastos" class="nav-link">Gastos</a>
+          <a href="#/compras" data-route="/compras" class="nav-link">Compras</a>
+          <a href="#/proveedores" data-route="/proveedores" class="nav-link">Proveedores</a>
+          <a href="#/socios" data-route="/socios" class="nav-link">Socios</a>
+          <a href="#/usuarios" data-route="/usuarios" class="nav-link">Usuarios</a>
+          <a href="#/informes" data-route="/informes" class="nav-link">Informes</a>
+          <a href="#/documentos" data-route="/documentos" class="nav-link">Documentos</a>
+          <a href="#/calendario" data-route="/calendario" class="nav-link">Calendario</a>
+          <a href="#/alertas" data-route="/alertas" class="nav-link">Alertas</a>
+          <a href="#/historial" data-route="/historial" class="nav-link">Historial</a>
+          <a href="#/configuracion" data-route="/configuracion" class="nav-link">Configuración</a>
+        </nav>
+      </aside>
+
+      <div class="app-main">
+        <header class="topbar">
+          <button class="icon-button mobile-menu-button" id="sidebar-toggle" aria-label="Abrir menú">
+            ☰
+          </button>
+          <div>
+            <p class="eyebrow">Centro privado de control</p>
+            <h1 id="page-title">Dashboard</h1>
+          </div>
+          <div class="topbar__actions">
+            <button class="button button--ghost" id="export-current-view" type="button">
+              Exportar vista
+            </button>
+            <div class="user-pill" aria-label="Usuario activo">
+              <span class="status-dot"></span>
+              Superadmin
+            </div>
+          </div>
+        </header>
+
+        <section class="config-warning" id="config-warning" hidden>
+          <strong>Backend pendiente de configurar.</strong>
+          CONTROL360 está usando modo demo local. Cuando despliegues Apps Script, pega la URL
+          terminada en <code>/exec</code> en <code>frontend/js/config.js</code>.
+        </section>
+
+        <main id="main-content" class="content" tabindex="-1">
+          <div id="view-root" class="view-root" aria-live="polite" tabindex="-1"></div>
+        </main>
+      </div>
+    </div>
+
+    <div id="modal-root" class="modal-root" aria-live="assertive"></div>
+    <div id="toast-root" class="toast-root" aria-live="polite"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>
