@@ -24,6 +24,7 @@ Configuración actual:
 - URL de Apps Script configurada en [frontend/js/config.js](frontend/js/config.js).
 - Endpoint actual: `https://script.google.com/macros/s/AKfycbzDRErOe09jRa5vV4VUFmvr5a39BBPZoX-dC77-gcNzQbDVL9qEUBQgMPDFm2UXERsE/exec`
 - El acceso del propietario queda preconfigurado en Apps Script con hash; no hay clave en texto ni en el frontend.
+- Identidad visual actualizada con logo CONTROL360 y sistema tipografico ACCESS preparado en `frontend/assets/fonts/`.
 
 Pendiente de configuración manual:
 
@@ -41,6 +42,12 @@ Pendiente de configuración manual:
 - Backend: Google Apps Script V8.
 - Base inicial: Google Sheets.
 - Documentos: Google Drive, mediante metadata inicial.
+
+## Identidad visual
+
+CONTROL360 usa una direccion visual tecnologica, premium y oscura con acentos verde neon/lima. La fuente principal configurada es ACCESS de designova para logotipo, titulos, encabezados, botones y paneles principales.
+
+Para que el navegador use ACCESS real, coloca el archivo licenciado `ACCESS.woff2` en [frontend/assets/fonts](frontend/assets/fonts). El CSS ya intenta cargar `ACCESS.woff2`, `ACCESS.woff` y `ACCESS.ttf` desde esa carpeta.
 
 No se usa Node.js en producción. El archivo `package.json` existe solo para ejecutar pruebas locales sin dependencias externas.
 

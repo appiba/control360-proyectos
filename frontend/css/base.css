@@ -20,7 +20,7 @@ body {
   background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-sans);
-  letter-spacing: -0.015em;
+  letter-spacing: 0.005em;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
@@ -57,6 +57,21 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+.button,
+.icon-button,
+.brand,
+.login-brand,
+.nav-link,
+.user-pill,
+.status-pill,
+.tag {
+  font-family: var(--font-access);
 }
 
 button {

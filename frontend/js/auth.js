@@ -71,7 +71,7 @@ export function renderLoginScreen(api, onAuthenticated) {
           </div>
           <label class="login-search">
             <span class="sr-only">Buscar</span>
-            <input type="search" placeholder="Buscar proyectos..." aria-label="Buscar proyectos" />
+            <input type="search" placeholder="Buscar proyectos, eventos o socios..." aria-label="Buscar proyectos, eventos o socios" />
             <span aria-hidden="true">&#128269;</span>
           </label>
           <nav class="login-links" aria-label="Modulos privados">
@@ -84,22 +84,25 @@ export function renderLoginScreen(api, onAuthenticated) {
         </header>
 
         <div class="login-hero">
-          <p class="eyebrow">Centro privado patrimonial</p>
-          <h1>BIENVENIDO</h1>
+          <img class="login-logo-emblem" src="./assets/brand/control360-logo.png" alt="CONTROL360 ERP inteligente" />
+          <p class="eyebrow">ERP inteligente con IA</p>
+          <h1 class="brand-hero-title">CONTROL360</h1>
+          <p class="brand-tagline">Plataforma privada de finanzas, datos y patrimonio.</p>
           <p>
-            CONTROL360 centraliza patrimonio, proyectos, eventos, socios, ingresos,
-            gastos, compras y documentos en una experiencia privada y ejecutiva.
+            Centraliza proyectos, eventos, socios, ingresos, gastos, compras y documentos
+            en una experiencia ejecutiva, segura y preparada para analisis inteligente.
           </p>
           <div class="login-meta-pills" aria-label="Informacion privada">
             <span>Administrador general</span>
             <span id="login-contact-pill">Contacto: ${OWNER_CONTACT_EMAIL}</span>
+            <span>Socios por invitacion</span>
           </div>
         </div>
 
         <aside class="login-access-card" aria-label="Acceso administrador">
           <div>
             <p class="eyebrow">Acceso privado</p>
-            <h2>Administrador general</h2>
+            <h2>Superadmin</h2>
             <p>Solo el propietario entra ahora. Socios queda listo para invitaciones.</p>
           </div>
           <form class="login-form" id="login-form">
@@ -112,8 +115,8 @@ export function renderLoginScreen(api, onAuthenticated) {
                 <button class="password-toggle" id="password-toggle" type="button" aria-label="Mostrar clave" aria-pressed="false">&#128065;</button>
               </span>
             </label>
-            <p class="login-message" id="login-message" role="alert"></p>
             <button class="button login-submit" type="submit">Login</button>
+            <p class="login-message" id="login-message" role="alert"></p>
           </form>
           <ul class="login-security-list">
             <li>Administrador unico.</li>

@@ -8,7 +8,7 @@
   }
 
   .login-nav {
-    grid-template-columns: 200px minmax(220px, 270px) minmax(330px, 1fr);
+    grid-template-columns: 220px minmax(230px, 300px) minmax(360px, 1fr);
     gap: 1rem;
   }
 
@@ -18,17 +18,17 @@
   }
 
   .login-access-card {
-    width: min(1000px, calc(100% - 2rem));
-    grid-template-columns: minmax(245px, 0.72fr) minmax(600px, 1.28fr);
+    width: min(1040px, calc(100% - 2rem));
+    grid-template-columns: minmax(245px, 0.72fr) minmax(610px, 1.28fr);
     position: relative;
     left: auto;
     bottom: auto;
     transform: none;
-    margin: 2rem auto 1.15rem;
+    margin: 1.5rem auto 1.15rem;
   }
 
   .login-access-card .login-form {
-    grid-template-columns: minmax(220px, 1fr) minmax(170px, 0.8fr) 86px;
+    grid-template-columns: minmax(220px, 1fr) minmax(180px, 0.82fr) 88px;
   }
 }
 
@@ -131,18 +131,22 @@
   }
 
   .login-hero {
-    margin-top: 2.25rem;
+    margin-top: 1.4rem;
   }
 
   .login-hero h1 {
-    font-size: clamp(2.35rem, 12vw, 4rem);
-    letter-spacing: 0.12em;
-    text-indent: 0.12em;
+    font-size: clamp(2.45rem, 12vw, 4.3rem);
+    letter-spacing: 0.08em;
+    text-indent: 0.08em;
+  }
+
+  .login-logo-emblem {
+    width: min(150px, 44vw);
   }
 
   .login-access-card {
     width: calc(100% - 1.5rem);
-    margin-top: 2rem;
+    margin-top: 1.2rem;
     border-radius: 22px;
     grid-template-columns: 1fr;
   }
