@@ -42,16 +42,16 @@ export function renderDashboardCharts(summary) {
         {
           label: "Ingresos",
           data: [12000, 16000, 22000, 28000, 36000, 42000, summary.totalIncome],
-          borderColor: "#36d7b7",
-          backgroundColor: "rgba(54, 215, 183, 0.16)",
+          borderColor: "#d8ff35",
+          backgroundColor: "rgba(216, 255, 53, 0.15)",
           fill: true,
           tension: 0.38,
         },
         {
           label: "Gastos",
           data: [9000, 12000, 16000, 21000, 26000, 31000, summary.totalExpenses],
-          borderColor: "#fb7185",
-          backgroundColor: "rgba(251, 113, 133, 0.12)",
+          borderColor: "#ff6b7a",
+          backgroundColor: "rgba(255, 107, 122, 0.12)",
           fill: true,
           tension: 0.38,
         },
@@ -68,12 +68,12 @@ export function renderDashboardCharts(summary) {
         {
           label: "Presupuesto",
           data: summary.projectBudgets,
-          backgroundColor: "rgba(128, 184, 255, 0.65)",
+          backgroundColor: "rgba(125, 211, 252, 0.56)",
         },
         {
           label: "Resultado",
           data: summary.projectResults,
-          backgroundColor: "rgba(54, 215, 183, 0.72)",
+          backgroundColor: "rgba(216, 255, 53, 0.72)",
         },
       ],
     },
@@ -87,7 +87,7 @@ export function renderDashboardCharts(summary) {
       datasets: [
         {
           data: summary.expenseValues,
-          backgroundColor: ["#36d7b7", "#80b8ff", "#a78bfa", "#fbbf24", "#fb7185", "#22c55e"],
+          backgroundColor: ["#d8ff35", "#7dd3fc", "#a78bfa", "#f8d66d", "#ff6b7a", "#75f05c"],
           borderWidth: 0,
         },
       ],
@@ -103,8 +103,8 @@ export function renderDashboardCharts(summary) {
         {
           label: "CONTROL360",
           data: [82, summary.riskScore, Math.max(summary.averageRoi, 5), 65, 72],
-          borderColor: "#36d7b7",
-          backgroundColor: "rgba(54, 215, 183, 0.16)",
+          borderColor: "#d8ff35",
+          backgroundColor: "rgba(216, 255, 53, 0.15)",
         },
       ],
     },
@@ -120,7 +120,7 @@ export function renderPartnerChart(labels, values) {
       datasets: [
         {
           data: values,
-          backgroundColor: ["#36d7b7", "#80b8ff", "#a78bfa", "#fbbf24", "#fb7185"],
+          backgroundColor: ["#d8ff35", "#7dd3fc", "#a78bfa", "#f8d66d", "#ff6b7a"],
           borderWidth: 0,
         },
       ],
@@ -136,14 +136,14 @@ function baseOptions(title, moneyScale) {
     plugins: {
       legend: {
         labels: {
-          color: "#cbd5e1",
+          color: "rgba(245, 247, 238, 0.72)",
           usePointStyle: true,
         },
       },
       title: {
         display: Boolean(title),
         text: title,
-        color: "#ecf4ff",
+        color: "#f5f7ee",
       },
       tooltip: {
         callbacks: moneyScale
@@ -156,13 +156,13 @@ function baseOptions(title, moneyScale) {
     scales: moneyScale
       ? {
           x: {
-            grid: { color: "rgba(148, 163, 184, 0.1)" },
-            ticks: { color: "#94a3b8" },
+            grid: { color: "rgba(245, 247, 238, 0.08)" },
+            ticks: { color: "rgba(245, 247, 238, 0.5)" },
           },
           y: {
-            grid: { color: "rgba(148, 163, 184, 0.1)" },
+            grid: { color: "rgba(245, 247, 238, 0.08)" },
             ticks: {
-              color: "#94a3b8",
+              color: "rgba(245, 247, 238, 0.5)",
               callback: (value) => formatCurrency(value),
             },
           },

@@ -1,5 +1,5 @@
 import { getState } from "../state.js";
-import { renderDashboardCharts } from "../charts.js";
+import { renderDashboardCharts } from "../charts.js?v=ios-glass-20260727";
 import { formatCurrency, formatPercent, getProjectFinancials, groupBy, sumBy } from "../utils.js";
 
 export function renderDashboard(container) {
@@ -9,18 +9,23 @@ export function renderDashboard(container) {
   container.innerHTML = `
     <section class="hero-panel">
       <div>
-        <p class="eyebrow">Fase 1 funcional</p>
-        <h2>Control patrimonial sin perder de vista caja, riesgo y socios.</h2>
+        <p class="eyebrow">CONTROL360 privado</p>
+        <h2>Resumen financiero elegante y total.</h2>
         <p>
-          CONTROL360 separa presupuesto, desembolsos, ingresos cobrados, gastos pagados y resultado.
-          Los datos visibles son demo locales hasta conectar Apps Script.
+          Patrimonio, caja, riesgo, socios, ingresos, gastos y proyectos en una sola vista.
+          Diseñado como centro ejecutivo personal, limpio y directo.
         </p>
+        <div class="dashboard-pills" aria-label="Filtros de resumen">
+          <span>Hoy</span>
+          <span>Este mes</span>
+          <span>Privado</span>
+        </div>
         <div class="hero-actions">
           <a class="button" href="#/proyectos">Crear o revisar proyectos</a>
           <a class="button button--ghost" href="#/gastos">Ver catálogo de gastos</a>
         </div>
       </div>
-      <div class="card">
+      <div class="card hero-stat-card">
         <span class="tag">Riesgo general: ${summary.riskLabel}</span>
         <h3>${formatCurrency(summary.netWorth)}</h3>
         <p>Patrimonio controlado estimado entre proyectos activos y oportunidades registradas.</p>

@@ -8,14 +8,48 @@ html {
 }
 
 body {
+  position: relative;
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(54, 215, 183, 0.18), transparent 32rem),
-    radial-gradient(circle at top right, rgba(128, 184, 255, 0.15), transparent 30rem),
+    radial-gradient(circle at 18% 12%, rgba(216, 255, 53, 0.24), transparent 19rem),
+    radial-gradient(circle at 86% 5%, rgba(125, 211, 252, 0.15), transparent 26rem),
+    radial-gradient(circle at 58% 92%, rgba(176, 96, 255, 0.11), transparent 32rem),
+    linear-gradient(115deg, rgba(86, 68, 45, 0.32), rgba(4, 7, 8, 0.2) 38%, rgba(13, 17, 16, 0.72)),
     var(--bg);
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-sans);
+  letter-spacing: -0.015em;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  pointer-events: none;
+}
+
+body::before {
+  z-index: -2;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 0 63%, rgba(255, 255, 255, 0.045) 64%, transparent 66%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 42px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 20rem);
+  filter: blur(0.2px);
+  opacity: 0.55;
+}
+
+body::after {
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 78%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.34));
 }
 
 button,
@@ -42,9 +76,9 @@ canvas {
 code {
   border: 1px solid var(--border);
   border-radius: 0.45rem;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   padding: 0.05rem 0.35rem;
-  color: #d7f7ee;
+  color: #f2ffd0;
 }
 
 .skip-link {
@@ -55,7 +89,7 @@ code {
   transform: translateY(-150%);
   border-radius: var(--radius-sm);
   background: var(--primary);
-  color: #041016;
+  color: #101407;
   padding: 0.75rem 1rem;
   font-weight: 800;
   transition: transform 0.2s ease;
