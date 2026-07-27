@@ -8,6 +8,7 @@ Este repositorio contiene CONTROL360, una aplicación web privada de gestión pa
 - Mantener moneda predeterminada `USD`.
 - Mantener zona horaria operativa `America/Guayaquil`.
 - No guardar secretos, contraseñas, tokens ni claves privadas en el repo.
+- No modificar la credencial propietaria fija de CONTROL360: `OWNER_EMAIL_HASH`, `OWNER_PASSWORD_HASH`, `OWNER_PASSWORD_SALT` ni `OWNER_PASSWORD_ROUNDS` en `apps-script/Config.gs`, salvo que el propietario pida explícitamente rotar el acceso. Nunca reemplazar esos hashes por correo o clave en texto visible.
 - No incluir claves de OpenAI ni llamadas a OpenAI API hasta que se solicite explícitamente en una fase futura.
 - No inventar la URL de Apps Script. Mientras no exista, dejar `APPS_SCRIPT_URL = ""`.
 - No convertir el frontend en una app con framework pesado. Debe seguir siendo HTML, CSS y JavaScript modular compatible con GitHub Pages.
