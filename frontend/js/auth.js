@@ -7,6 +7,7 @@ const OWNER_PASSWORD_HASH = "FyPmwfffrS/aJtEY8PcNNUp8ceHUjJxkCUqZyAoNyRo=";
 const OWNER_PASSWORD_ROUNDS = 2500;
 const LOCAL_OWNER_SESSION_MODE = "owner-local";
 const SESSION_DURATION_HOURS = 12;
+const OWNER_CONTACT_EMAIL = ["pdavidnieto", "gmail.com"].join("@");
 let pendingLoginRoute = "/dashboard";
 
 export function getSession() {
@@ -77,7 +78,8 @@ export function renderLoginScreen(api, onAuthenticated) {
             <button type="button" data-login-route="/proyectos">Proyectos</button>
             <button type="button" data-login-route="/eventos">Eventos</button>
             <button type="button" data-login-route="/socios">Socios</button>
-            <button class="login-join" type="button" data-login-route="/dashboard">Administrador</button>
+            <button type="button" data-show-contact="true">Contacto</button>
+            <button class="login-join" type="button" data-login-route="/dashboard">Entrar</button>
           </nav>
         </header>
 
@@ -88,7 +90,10 @@ export function renderLoginScreen(api, onAuthenticated) {
             CONTROL360 centraliza patrimonio, proyectos, eventos, socios, ingresos,
             gastos, compras y documentos en una experiencia privada y ejecutiva.
           </p>
-          <button class="login-learn" type="button" data-login-route="/dashboard">Entrar ahora</button>
+          <div class="login-meta-pills" aria-label="Informacion privada">
+            <span>Administrador general</span>
+            <span id="login-contact-pill">Contacto: ${OWNER_CONTACT_EMAIL}</span>
+          </div>
         </div>
 
         <aside class="login-access-card" aria-label="Acceso administrador">
@@ -125,6 +130,7 @@ export function renderLoginScreen(api, onAuthenticated) {
   const passwordInput = modalRoot.querySelector("#password-input");
   const passwordToggle = modalRoot.querySelector("#password-toggle");
   const routeButtons = modalRoot.querySelectorAll("[data-login-route]");
+  const contactButtons = modalRoot.querySelectorAll("[data-show-contact]");
 
   passwordToggle.addEventListener("click", () => {
     const showing = passwordInput.type === "text";
@@ -137,6 +143,13 @@ export function renderLoginScreen(api, onAuthenticated) {
     button.addEventListener("click", () => {
       pendingLoginRoute = button.dataset.loginRoute || "/dashboard";
       form.querySelector("input[name='correo']")?.focus();
+    });
+  });
+
+  contactButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      message.textContent = `Contacto: ${OWNER_CONTACT_EMAIL}`;
+      modalRoot.querySelector("#login-contact-pill")?.scrollIntoView({ block: "center", behavior: "smooth" });
     });
   });
 

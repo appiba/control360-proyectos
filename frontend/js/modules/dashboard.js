@@ -1,5 +1,5 @@
 import { getState } from "../state.js";
-import { renderDashboardCharts } from "../charts.js?v=control360-green-nav-20260727";
+import { renderDashboardCharts } from "../charts.js?v=compact-green-login-20260727";
 import { formatCurrency, formatPercent, getProjectFinancials, groupBy, sumBy } from "../utils.js";
 
 export function renderDashboard(container) {

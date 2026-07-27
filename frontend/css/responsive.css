@@ -16,16 +16,17 @@
   }
 
   .login-access-card {
-    grid-template-columns: 1fr;
+    width: min(800px, calc(100% - 2rem));
+    grid-template-columns: minmax(205px, 0.75fr) minmax(430px, 1.25fr);
     position: relative;
     left: auto;
     bottom: auto;
     transform: none;
-    margin: 3rem auto 1.25rem;
+    margin: 2rem auto 1.15rem;
   }
 
   .login-access-card .login-form {
-    grid-template-columns: 1fr 1fr auto;
+    grid-template-columns: minmax(175px, 1fr) minmax(150px, 0.8fr) minmax(145px, auto);
   }
 }
 
@@ -141,6 +142,7 @@
     width: calc(100% - 1.5rem);
     margin-top: 2rem;
     border-radius: 22px;
+    grid-template-columns: 1fr;
   }
 
   .login-access-card .login-form {

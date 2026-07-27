@@ -1,16 +1,16 @@
-import { api, isBackendConfigured } from "./api.js?v=control360-green-nav-20260727";
+import { api, isBackendConfigured } from "./api.js?v=compact-green-login-20260727";
 import {
   clearSession,
   ensureAuthenticated,
   getSession,
   renderLoginScreen,
   updateSessionBadge,
-} from "./auth.js?v=control360-green-nav-20260727";
+} from "./auth.js?v=compact-green-login-20260727";
 import { exportCurrentView } from "./reports.js";
 import { getCurrentPath, refreshRoute, registerRoute, startRouter } from "./router.js";
 import { getState, subscribe } from "./state.js";
 import { toast } from "./utils.js";
-import { renderDashboard } from "./modules/dashboard.js?v=control360-green-nav-20260727";
+import { renderDashboard } from "./modules/dashboard.js?v=compact-green-login-20260727";
 import { renderProjects, renderProjectDetail } from "./modules/projects.js";
 import { renderEvents } from "./modules/events.js";
 import { renderBusinesses } from "./modules/businesses.js";
