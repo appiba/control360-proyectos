@@ -11,9 +11,25 @@ import {
   getFormData,
   getProjectFinancials,
   normalizeText,
+  sumBy,
   toast,
   validateProject,
 } from "../utils.js";
+
+const PROJECT_SUBTYPES_BY_TYPE = {
+  evento: ["Produccion completa", "Concierto", "Festival", "Activacion de marca", "Evento privado", "Evento corporativo"],
+  negocio: ["Operacion mensual", "Medio digital", "Comercio", "Servicio profesional", "Franquicia", "Unidad de negocio"],
+  inversion: ["Capital semilla", "Participacion", "Prestamo", "Portafolio", "Renta fija", "Renta variable"],
+  "compra de empresa": ["Due diligence", "Negociacion", "Adquisicion parcial", "Adquisicion total", "Traspaso"],
+  "proyecto digital": ["SaaS", "Marketplace", "Aplicacion web", "Contenido digital", "Automatizacion"],
+  inmueble: ["Terreno", "Casa", "Departamento", "Local comercial", "Remodelacion", "Renta"],
+  activo: ["Vehiculo", "Equipo", "Maquinaria", "Marca", "Licencia", "Inventario"],
+  oportunidad: ["Idea", "Prospecto", "Alianza", "Compra futura", "Expansion"],
+  "otro personalizado": ["General", "Operacion especial", "Patrimonial", "Financiero"],
+};
+
+const CURRENCY_OPTIONS = ["USD"];
+const BASE_PEOPLE_OPTIONS = ["Administrador general", "Propietario principal", "Todos", "Sociedad completa"];
 
 export function renderProjects(container) {
   const state = getState();
@@ -40,7 +56,7 @@ export function renderProjects(container) {
     </section>
   `;
 
-  container.querySelector("#open-project-modal").addEventListener("click", () => openProjectModal());
+  container.querySelector("#open-project-modal").addEventListener("click", () => openProjectModal(state));
   container.querySelector("#project-filter-type").addEventListener("change", (event) => {
     const selected = event.target.value;
     const filtered = selected ? projects.filter((project) => project.tipo === selected) : projects;
@@ -69,6 +85,8 @@ export function renderProjectDetail(container, projectId) {
   const financials = getProjectFinancials(project, state);
   const incomes = state.incomes.filter((item) => item.proyectoId === project.id);
   const expenses = state.expenses.filter((item) => item.proyectoId === project.id);
+  const partners = state.partners.filter((item) => item.proyectoId === project.id);
+  const partnerSummary = getPartnerSummary(partners, expenses);
 
   container.innerHTML = `
     <section class="section-heading">
@@ -130,6 +148,11 @@ export function renderProjectDetail(container, projectId) {
       </article>
     </section>
 
+    <section class="detail-grid">
+      ${compactTable("Socios de este proyecto", partners, ["nombre", "tipoSocio", "participacionLegal", "participacionEconomica", "participacionUtilidades"])}
+      ${compactTable("Aportes y gastos por socio", partnerSummary, ["socio", "aporteRealizado", "gastosCubiertos", "saldo"]) }
+    </section>
+
     <section class="chart-grid">
       ${compactTable("Ingresos del proyecto", incomes, ["categoria", "concepto", "estado", "valorCobrado"])}
       ${compactTable("Gastos del proyecto", expenses, ["categoria", "concepto", "estado", "valorPagado"])}
@@ -189,8 +212,10 @@ function emptyProjects() {
   `;
 }
 
-function openProjectModal() {
+function openProjectModal(state = getState()) {
   const modalRoot = document.querySelector("#modal-root");
+  const peopleOptions = buildPeopleOptions(state);
+  const subtypeOptions = getProjectSubtypeOptions(PROJECT_TYPES[0]);
   modalRoot.innerHTML = `
     <div class="modal-backdrop" role="presentation">
       <form class="modal" id="project-form" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
@@ -204,8 +229,8 @@ function openProjectModal() {
         <div class="modal__body">
           <div class="form-grid">
             ${input("nombre", "Nombre", "text", true)}
-            ${select("tipo", "¿Qué se va a registrar?", PROJECT_TYPES)}
-            ${input("subtipo", "Subtipo", "text")}
+            ${select("tipo", "¿Qué se va a registrar?", PROJECT_TYPES, PROJECT_TYPES[0], "project-type")}
+            ${select("subtipo", "Subtipo", subtypeOptions, subtypeOptions[0], "project-subtype")}
             ${select("estado", "Estado", PROJECT_STATUSES, "Idea")}
             ${input("ciudad", "Ciudad", "text")}
             ${input("direccionLugar", "Dirección o lugar", "text")}
@@ -213,9 +238,9 @@ function openProjectModal() {
             ${input("fechaEstimadaFin", "Fecha estimada de finalización", "date")}
             ${input("presupuestoInicial", "Presupuesto inicial", "number")}
             ${input("presupuestoActualizado", "Presupuesto actualizado", "number")}
-            ${input("responsable", "Responsable", "text")}
-            ${input("propietario", "Propietario", "text")}
-            ${input("moneda", "Moneda", "text", true, "USD")}
+            ${select("responsable", "Responsable", peopleOptions, peopleOptions[0])}
+            ${select("propietario", "Propietario", peopleOptions, peopleOptions[1] || peopleOptions[0])}
+            ${select("moneda", "Moneda", CURRENCY_OPTIONS, "USD")}
             ${select("nivelRiesgo", "Nivel de riesgo", PROJECT_RISK_LEVELS, "Medio")}
             ${input("etiquetas", "Etiquetas", "text")}
             <label class="full">Descripción
@@ -241,6 +266,12 @@ function openProjectModal() {
   modalRoot.querySelector("#cancel-project-modal").addEventListener("click", close);
   modalRoot.querySelector(".modal-backdrop").addEventListener("click", (event) => {
     if (event.target.classList.contains("modal-backdrop")) close();
+  });
+  const typeSelect = modalRoot.querySelector("#project-type");
+  const subtypeSelect = modalRoot.querySelector("#project-subtype");
+  typeSelect.addEventListener("change", () => {
+    const options = getProjectSubtypeOptions(typeSelect.value);
+    subtypeSelect.innerHTML = options.map((option) => `<option>${escapeHTML(option)}</option>`).join("");
   });
   modalRoot.querySelector("#project-form").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -270,14 +301,41 @@ function input(name, label, type = "text", required = false, value = "") {
   `;
 }
 
-function select(name, label, options, selected = options[0]) {
+function select(name, label, options, selected = options[0], id = "") {
   return `
     <label>${label}
-      <select name="${name}">
+      <select name="${name}" ${id ? `id="${id}"` : ""}>
         ${options.map((option) => `<option ${option === selected ? "selected" : ""}>${escapeHTML(option)}</option>`).join("")}
       </select>
     </label>
   `;
+}
+
+function getProjectSubtypeOptions(type) {
+  return PROJECT_SUBTYPES_BY_TYPE[normalizeText(type)] || PROJECT_SUBTYPES_BY_TYPE["otro personalizado"];
+}
+
+function buildPeopleOptions(state) {
+  const partnerNames = (state.partners || [])
+    .map((partner) => partner.nombre)
+    .filter(Boolean);
+  return [...new Set([...BASE_PEOPLE_OPTIONS, ...partnerNames])];
+}
+
+function getPartnerSummary(partners, expenses) {
+  return partners.map((partner) => {
+    const coveredExpenses = expenses.filter((expense) =>
+      expense.socioId === partner.id ||
+      normalizeText(expense.socioNombre) === normalizeText(partner.nombre),
+    );
+    const gastosCubiertos = sumBy(coveredExpenses, (expense) => expense.valorPagado || expense.valorReal || expense.valorNegociado);
+    return {
+      socio: partner.nombre,
+      aporteRealizado: partner.aporteRealizado,
+      gastosCubiertos,
+      saldo: Number(partner.aporteRealizado || 0) - gastosCubiertos,
+    };
+  });
 }
 
 function detailKpi(label, value, type = "money") {
@@ -301,12 +359,12 @@ function compactTable(title, rows, keys) {
       <div class="table-wrap">
         <table>
           <thead>
-            <tr>${keys.map((key) => `<th>${key}</th>`).join("")}</tr>
+            <tr>${keys.map((key) => `<th>${escapeHTML(labelForKey(key))}</th>`).join("")}</tr>
           </thead>
           <tbody>
             ${rows.map((item) => `
               <tr>
-                ${keys.map((key) => `<td>${key.includes("valor") ? formatCurrency(item[key]) : escapeHTML(item[key])}</td>`).join("")}
+                ${keys.map((key) => `<td>${formatCompactValue(key, item[key])}</td>`).join("")}
               </tr>
             `).join("") || `<tr><td colspan="${keys.length}">Sin registros todavía.</td></tr>`}
           </tbody>
@@ -314,5 +372,31 @@ function compactTable(title, rows, keys) {
       </div>
     </article>
   `;
+}
+
+function formatCompactValue(key, value) {
+  if (/valor|aporte|gasto|saldo/i.test(key)) return formatCurrency(value);
+  if (/participacion/i.test(key)) return `${Number(value || 0).toFixed(1)} %`;
+  return escapeHTML(value || "Pendiente");
+}
+
+function labelForKey(key) {
+  const labels = {
+    nombre: "Nombre",
+    tipoSocio: "Tipo",
+    participacionLegal: "Legal",
+    participacionEconomica: "Economica",
+    participacionUtilidades: "Utilidades",
+    socio: "Socio",
+    aporteRealizado: "Aporte realizado",
+    gastosCubiertos: "Gastos cubiertos",
+    saldo: "Saldo",
+    categoria: "Categoria",
+    concepto: "Concepto",
+    estado: "Estado",
+    valorCobrado: "Cobrado",
+    valorPagado: "Pagado",
+  };
+  return labels[key] || key;
 }
 

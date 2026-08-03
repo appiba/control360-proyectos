@@ -102,7 +102,7 @@ Campos base:
 - cantidad, unidad.
 - valorPresupuestado, valorCotizado, valorNegociado, valorReal, valorPagado, saldoPendiente.
 - proveedor, fecha, formaPago, estado, comprobante, observaciones.
-- quienCubre, creadoPor, creadoEn, actualizadoEn.
+- quienCubre, socioId, socioNombre, creadoPor, creadoEn, actualizadoEn.
 
 ### Socios
 

@@ -3,6 +3,9 @@ import { getState } from "../state.js";
 import { addPartner } from "../state.js";
 import { escapeHTML, formatCurrency, getFormData, toast, toNumber } from "../utils.js";
 
+const PARTNER_TYPES = ["Propietario", "Socio capitalista", "Socio operador", "Beneficiario", "Inversionista", "Invitado"];
+const PARTNER_STATUSES = ["Activo", "Invitacion pendiente", "Suspendido", "Retirado"];
+
 export function renderPartners(container) {
   const state = getState();
   const labels = state.partners.map((partner) => partner.nombre);
@@ -33,13 +36,17 @@ export function renderPartners(container) {
           </label>
           <label>Nombre<input name="nombre" required /></label>
           <label>Correo<input name="correo" type="email" /></label>
-          <label>Tipo de socio<input name="tipoSocio" placeholder="Legal, operador, beneficiario..." /></label>
+          <label>Tipo de socio
+            <select name="tipoSocio">${PARTNER_TYPES.map((type) => `<option>${escapeHTML(type)}</option>`).join("")}</select>
+          </label>
           <label>Participación legal %<input name="participacionLegal" type="number" min="0" max="100" step="0.01" /></label>
           <label>Participación económica %<input name="participacionEconomica" type="number" min="0" max="100" step="0.01" /></label>
           <label>Participación utilidades %<input name="participacionUtilidades" type="number" min="0" max="100" step="0.01" /></label>
           <label>Aporte comprometido<input name="aporteComprometido" type="number" min="0" step="0.01" /></label>
           <label>Aporte realizado<input name="aporteRealizado" type="number" min="0" step="0.01" /></label>
-          <label>Estado<input name="estado" value="Activo" /></label>
+          <label>Estado
+            <select name="estado">${PARTNER_STATUSES.map((status) => `<option ${status === "Activo" ? "selected" : ""}>${escapeHTML(status)}</option>`).join("")}</select>
+          </label>
         </div>
         <div class="hero-actions">
           <button class="button" type="submit">Agregar socio</button>
@@ -76,6 +83,7 @@ export function renderPartners(container) {
     const data = getFormData(event.currentTarget);
     addPartner(data);
     toast("Socio agregado en modo demo.");
+    renderPartners(container);
   });
 }
 

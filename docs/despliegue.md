@@ -27,7 +27,7 @@ Pasos:
 
 1. Abrir el proyecto de Apps Script indicado.
 2. Copiar todos los archivos `.gs` y `appsscript.json` desde `apps-script/`.
-3. Ejecutar `setupDatabase()` después de cargar Fase 2. Esto agrega columnas nuevas a `Usuarios` e `Invitaciones` sin borrar datos.
+3. Ejecutar `setupDatabase()` después de cargar Fase 2. Esto agrega columnas nuevas a `Usuarios`, `Invitaciones` y `Gastos` sin borrar datos.
 4. Revisar las hojas creadas en Google Sheets.
 5. Desplegar como aplicación web.
 6. Copiar la URL terminada en `/exec`.
@@ -55,6 +55,7 @@ Antes de usar producción:
 - Confirmar que `setupDatabase` creó todas las hojas.
 - Confirmar que `Usuarios` tenga columnas `rol`, `passwordHash`, `passwordSalt`, `passwordRounds` e `invitacionId`.
 - Confirmar que `Invitaciones` tenga `codigoHash`, `creadoPor`, `enviadoEn` y `aceptacionUrl`.
+- Confirmar que `Gastos` tenga `socioId` y `socioNombre` para separar gastos por socio/responsable.
 - Entrar como propietario y abrir el módulo `Usuarios`.
 - Crear una invitación de prueba para un correo propio/secundario y activar el acceso con el código.
 - Crear un proyecto de prueba no sensible.

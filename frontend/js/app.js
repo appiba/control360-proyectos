@@ -1,23 +1,23 @@
-import { api, isBackendConfigured } from "./api.js?v=control360-admin-stable-v4-20260803";
+import { api, isBackendConfigured } from "./api.js?v=control360-selectors-v1-20260803";
 import {
   clearSession,
   ensureAuthenticated,
   getSession,
   renderLoginScreen,
   updateSessionBadge,
-} from "./auth.js?v=control360-admin-stable-v4-20260803";
+} from "./auth.js?v=control360-selectors-v1-20260803";
 import { exportCurrentView } from "./reports.js";
 import { getCurrentPath, refreshRoute, registerRoute, startRouter } from "./router.js";
 import { getState, setState, subscribe } from "./state.js";
 import { toast } from "./utils.js";
-import { renderDashboard } from "./modules/dashboard.js?v=control360-admin-stable-v4-20260803";
-import { renderProjects, renderProjectDetail } from "./modules/projects.js";
+import { renderDashboard } from "./modules/dashboard.js?v=control360-selectors-v1-20260803";
+import { renderProjects, renderProjectDetail } from "./modules/projects.js?v=control360-selectors-v1-20260803";
 import { renderEvents } from "./modules/events.js";
 import { renderBusinesses } from "./modules/businesses.js";
 import { renderInvestments } from "./modules/investments.js";
-import { renderIncome } from "./modules/income.js";
-import { renderExpenses } from "./modules/expenses.js";
-import { renderPartners } from "./modules/partners.js";
+import { renderIncome } from "./modules/income.js?v=control360-selectors-v1-20260803";
+import { renderExpenses } from "./modules/expenses.js?v=control360-selectors-v1-20260803";
+import { renderPartners } from "./modules/partners.js?v=control360-selectors-v1-20260803";
 import { renderProviders } from "./modules/providers.js";
 import { renderPurchases } from "./modules/purchases.js";
 import { renderUsers } from "./modules/users.js";

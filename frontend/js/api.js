@@ -12,7 +12,7 @@ import {
   updateProject,
 } from "./state.js";
 import { normalizeText } from "./utils.js";
-import { EXPENSE_CATALOG } from "./modules/expenses.js";
+import { EXPENSE_CATALOG } from "./modules/expenses.js?v=control360-selectors-v1-20260803";
 
 const APPS_SCRIPT_TIMEOUT_MS = 15000;
 

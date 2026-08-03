@@ -1,5 +1,5 @@
 import { getState } from "../state.js";
-import { renderDashboardCharts } from "../charts.js?v=control360-admin-stable-v4-20260803";
+import { renderDashboardCharts } from "../charts.js?v=control360-selectors-v1-20260803";
 import { formatCurrency, formatPercent, getProjectFinancials, groupBy, sumBy } from "../utils.js";
 
 export function renderDashboard(container) {

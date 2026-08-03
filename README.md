@@ -15,6 +15,8 @@ Funcional hoy:
 - Pantalla de Usuarios para crear invitaciones, revisar usuarios, ver accesos y revocar accesos por proyecto.
 - Backend con validación de sesión/token en acciones privadas.
 - Filtrado de proyectos, dashboard, ingresos, gastos, socios, documentos, informes, compras e historial según permisos.
+- Formularios de proyectos, ingresos, gastos y socios con selectores de catálogo para evitar texto libre donde debe existir una opción controlada.
+- Detalle de proyecto con socios, aportes, ingresos y gastos filtrados solo para ese proyecto.
 - Navegación lateral para todos los módulos solicitados.
 - Pantalla de proyectos con creación, listado, estados, tipos y detalle básico.
 - Módulos visuales de ingresos, gastos, socios, compras, proveedores, documentos, historial y configuración.
@@ -34,7 +36,7 @@ Configuración actual:
 Pendiente de configuración manual:
 
 - Volver a cargar los archivos de [apps-script](apps-script) dentro del proyecto de Google Apps Script.
-- Ejecutar `setupDatabase()` desde Apps Script para agregar columnas nuevas de Fase 2 sin borrar datos.
+- Ejecutar `setupDatabase()` desde Apps Script para agregar columnas nuevas de Fase 2, incluyendo `Gastos`, sin borrar datos.
 - Volver a probar `healthCheck` en el endpoint `/exec`.
 - Activar GitHub Pages desde la carpeta `/frontend`.
 - Conceder permisos de escritura al repo si se desea que Codex pueda empujar la rama y abrir el PR automáticamente.
@@ -83,7 +85,7 @@ Las pruebas actuales verifican cálculos financieros críticos, validación de p
 2. Copia los archivos de la carpeta [apps-script](apps-script) al proyecto.
 3. Verifica que `CONTROL360_CONFIG.SPREADSHEET_ID` apunte a:
    `1zi4nLceMyUTRLdDftHF2hWWbCxAL42EnfcNu56u2d_Q`
-4. Ejecuta manualmente `setupDatabase()` una vez y concede permisos. En Fase 2 esto agrega columnas nuevas a `Usuarios` e `Invitaciones` sin eliminar información existente.
+4. Ejecuta manualmente `setupDatabase()` una vez y concede permisos. En Fase 2 esto agrega columnas nuevas a `Usuarios`, `Invitaciones` y `Gastos` sin eliminar información existente.
 5. Despliega como aplicación web:
    - Ejecutar como: propietario.
    - Acceso: solo usuarios autorizados, o el alcance privado que definas.

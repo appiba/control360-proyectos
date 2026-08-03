@@ -209,18 +209,6 @@ export function renderLoginScreen(api, onAuthenticated) {
     submitButton.textContent = "...";
     message.textContent = "";
 
-    if (ownerEmail) {
-      const localOwnerSession = await createLocalOwnerSession(correo, password);
-      submitButton.disabled = false;
-      submitButton.textContent = "Login";
-      if (localOwnerSession) {
-        openSession(localOwnerSession, modalRoot, onAuthenticated);
-        return;
-      }
-      message.textContent = "Clave de administrador incorrecta. Escribe solo los numeros, sin letras ni espacios.";
-      return;
-    }
-
     let result = null;
     if (isBackendConfigured()) {
       result = await api.login({ correo, password });
@@ -234,6 +222,18 @@ export function renderLoginScreen(api, onAuthenticated) {
         }, modalRoot, onAuthenticated);
         return;
       }
+    }
+
+    if (ownerEmail) {
+      const localOwnerSession = await createLocalOwnerSession(correo, password);
+      submitButton.disabled = false;
+      submitButton.textContent = "Login";
+      if (localOwnerSession) {
+        openSession(localOwnerSession, modalRoot, onAuthenticated);
+        return;
+      }
+      message.textContent = "Clave de administrador incorrecta. Escribe solo los numeros, sin letras ni espacios.";
+      return;
     }
 
     submitButton.disabled = false;

@@ -197,6 +197,8 @@ function registrarGasto_(payload, context) {
       comprobante: data.comprobante || "",
       observaciones: data.observaciones || "",
       quienCubre: data.quienCubre || "",
+      socioId: data.socioId || "",
+      socioNombre: data.socioNombre || "",
       creadoPor: context.userEmail || "",
       creadoEn: nowIso_(),
       actualizadoEn: nowIso_()

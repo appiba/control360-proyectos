@@ -260,6 +260,21 @@ const COVER_OPTIONS = [
   "Descontado de utilidad general",
 ];
 
+const UNIT_OPTIONS = ["servicio", "unidad", "dia", "hora", "mes", "noche", "persona", "km", "paquete"];
+
+const PAYMENT_METHODS = [
+  "Transferencia",
+  "Efectivo",
+  "Tarjeta",
+  "Cheque",
+  "Deposito",
+  "Pasarela de pago",
+  "Canje",
+  "Pendiente por definir",
+];
+
+const DEFAULT_EXPENSE_OWNERS = ["Sociedad completa", "Administrador general", "Propietario principal", "Proveedor pendiente"];
+
 export function renderExpenses(container) {
   const state = getState();
 
@@ -270,13 +285,19 @@ export function renderExpenses(container) {
         <h2>Registro de gastos</h2>
         <p>Flujo: categoría → subcategoría → concepto → cantidad → valor unitario → total.</p>
       </div>
+      <div class="toolbar">
+        <select id="expense-filter-project" aria-label="Filtrar gastos por proyecto">
+          <option value="">Todos los proyectos</option>
+          ${state.projects.map((project) => `<option value="${project.id}">${escapeHTML(project.nombre)}</option>`).join("")}
+        </select>
+      </div>
     </section>
 
     <section class="detail-grid">
       <form class="form-card" id="expense-form">
         <h3>Registrar gasto</h3>
         <div class="form-grid">
-          ${projectSelect(state.projects)}
+          ${projectSelect(state.projects, "expense-project")}
           <label>Etapa
             <select name="etapa">${EXPENSE_STAGES.map((stage) => `<option>${stage}</option>`).join("")}</select>
           </label>
@@ -290,21 +311,33 @@ export function renderExpenses(container) {
             <select name="concepto" id="expense-concept"></select>
           </label>
           <label>Cantidad<input name="cantidad" type="number" min="0" step="0.01" value="1" /></label>
-          <label>Unidad<input name="unidad" placeholder="servicio, unidad, día..." /></label>
+          <label>Unidad
+            <select name="unidad">${UNIT_OPTIONS.map((unit) => `<option>${escapeHTML(unit)}</option>`).join("")}</select>
+          </label>
           <label>Valor presupuestado<input name="valorPresupuestado" type="number" min="0" step="0.01" /></label>
           <label>Valor cotizado<input name="valorCotizado" type="number" min="0" step="0.01" /></label>
           <label>Valor negociado<input name="valorNegociado" type="number" min="0" step="0.01" /></label>
           <label>Valor real<input name="valorReal" type="number" min="0" step="0.01" /></label>
           <label>Valor pagado<input name="valorPagado" type="number" min="0" step="0.01" /></label>
           <label>Saldo pendiente<input name="saldoPendiente" type="number" min="0" step="0.01" /></label>
-          <label>Proveedor<input name="proveedor" /></label>
+          <label>Proveedor
+            <select name="proveedor">
+              <option>Proveedor pendiente</option>
+              ${(state.providers || []).map((provider) => `<option>${escapeHTML(provider.nombre || provider.empresa)}</option>`).join("")}
+            </select>
+          </label>
           <label>Fecha<input name="fecha" type="date" /></label>
-          <label>Forma de pago<input name="formaPago" /></label>
+          <label>Forma de pago
+            <select name="formaPago">${PAYMENT_METHODS.map((method) => `<option>${escapeHTML(method)}</option>`).join("")}</select>
+          </label>
           <label>Estado
             <select name="estado">${EXPENSE_STATUSES.map((status) => `<option>${status}</option>`).join("")}</select>
           </label>
           <label>Quién cubre
             <select name="quienCubre">${COVER_OPTIONS.map((option) => `<option>${option}</option>`).join("")}</select>
+          </label>
+          <label>Socio o responsable
+            <select name="socioId" id="expense-partner"></select>
           </label>
           <label class="full">Observaciones<textarea name="observaciones"></textarea></label>
         </div>
@@ -315,7 +348,7 @@ export function renderExpenses(container) {
 
       <article class="table-card">
         <h3>Últimos gastos</h3>
-        ${expenseTable(state.expenses, state.projects)}
+        <div id="expense-table-root">${expenseTable(state.expenses, state.projects)}</div>
       </article>
     </section>
 
@@ -333,6 +366,13 @@ export function renderExpenses(container) {
   `;
 
   setupCatalogSelects(container);
+  setupExpensePartnerSelect(container, state);
+
+  container.querySelector("#expense-filter-project").addEventListener("change", (event) => {
+    const projectId = event.target.value;
+    const rows = projectId ? state.expenses.filter((expense) => expense.proyectoId === projectId) : state.expenses;
+    container.querySelector("#expense-table-root").innerHTML = expenseTable(rows, state.projects);
+  });
 
   container.querySelector("#expense-form").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -341,8 +381,15 @@ export function renderExpenses(container) {
       toast("Selecciona un proyecto.", "error");
       return;
     }
+    const partnerSelect = event.currentTarget.querySelector("#expense-partner");
+    data.socioNombre = partnerSelect?.selectedOptions?.[0]?.textContent?.trim() || "";
     const result = await api.createExpense(data);
+    if (!result.ok) {
+      toast(result.message || "No fue posible guardar el gasto.", "error");
+      return;
+    }
     toast(result.message || "Gasto registrado.");
+    renderExpenses(container);
   });
 }
 
@@ -372,10 +419,31 @@ function setupCatalogSelects(container) {
   renderSubcategories();
 }
 
-function projectSelect(projects) {
+function setupExpensePartnerSelect(container, state) {
+  const projectSelectElement = container.querySelector("#expense-project");
+  const partnerSelect = container.querySelector("#expense-partner");
+
+  const renderPartners = () => {
+    const projectPartners = (state.partners || [])
+      .filter((partner) => partner.proyectoId === projectSelectElement.value)
+      .map((partner) => ({ value: partner.id, label: partner.nombre }));
+    const options = [
+      ...DEFAULT_EXPENSE_OWNERS.map((label) => ({ value: label, label })),
+      ...projectPartners,
+    ];
+    partnerSelect.innerHTML = options
+      .map((option) => `<option value="${escapeHTML(option.value)}">${escapeHTML(option.label)}</option>`)
+      .join("");
+  };
+
+  projectSelectElement.addEventListener("change", renderPartners);
+  renderPartners();
+}
+
+function projectSelect(projects, id = "") {
   return `
     <label>Proyecto
-      <select name="proyectoId" required>
+      <select name="proyectoId" ${id ? `id="${id}"` : ""} required>
         <option value="">Seleccionar</option>
         ${projects.map((project) => `<option value="${project.id}">${escapeHTML(project.nombre)}</option>`).join("")}
       </select>
@@ -392,6 +460,7 @@ function expenseTable(expenses, projects) {
           <tr>
             <th>Proyecto</th>
             <th>Concepto</th>
+            <th>Cubre</th>
             <th>Estado</th>
             <th>Negociado</th>
             <th>Pagado</th>
@@ -403,12 +472,13 @@ function expenseTable(expenses, projects) {
             <tr>
               <td>${escapeHTML(projectNames[expense.proyectoId] || "Sin proyecto")}</td>
               <td>${escapeHTML(expense.concepto)}</td>
+              <td>${escapeHTML(expense.socioNombre || expense.quienCubre || "Pendiente")}</td>
               <td>${escapeHTML(expense.estado)}</td>
               <td>${formatCurrency(expense.valorNegociado)}</td>
               <td>${formatCurrency(expense.valorPagado)}</td>
               <td>${formatCurrency(calculateSavings(expense.valorCotizado, expense.valorNegociado))}</td>
             </tr>
-          `).join("") || `<tr><td colspan="6">Sin gastos registrados.</td></tr>`}
+          `).join("") || `<tr><td colspan="7">Sin gastos registrados.</td></tr>`}
         </tbody>
       </table>
     </div>
