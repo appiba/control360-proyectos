@@ -2,6 +2,7 @@ import { CONFIG, isBackendConfigured } from "./config.js";
 import {
   addExpense,
   addIncome,
+  addPartner,
   addProject,
   addUserInvitation,
   archiveProject,
@@ -12,9 +13,15 @@ import {
   updateProject,
 } from "./state.js";
 import { normalizeText } from "./utils.js";
-import { EXPENSE_CATALOG } from "./modules/expenses.js?v=control360-selectors-v1-20260803";
 
 const APPS_SCRIPT_TIMEOUT_MS = 15000;
+const LOCAL_EXPENSE_CATALOG = [
+  { categoria: "Personal", subcategorias: [{ nombre: "Operacion y talento", conceptos: ["DJ", "Artista", "Seguridad", "Limpieza"] }] },
+  { categoria: "Produccion", subcategorias: [{ nombre: "Tecnica", conceptos: ["Sonido", "Iluminacion", "Pantallas LED", "Tarima"] }] },
+  { categoria: "Publicidad", subcategorias: [{ nombre: "Marketing y ventas", conceptos: ["Meta Ads", "Radio", "Influencers", "Flyers"] }] },
+  { categoria: "Administracion", subcategorias: [{ nombre: "Soporte administrativo", conceptos: ["Legal", "Contabilidad", "Contratos", "Software"] }] },
+  { categoria: "Otros", subcategorias: [{ nombre: "Contingencias", conceptos: ["Imprevistos", "Garantias", "Depositos"] }] },
+];
 
 function response(ok, data = {}, message = "", errors = []) {
   return { ok, data, message, errors };
@@ -105,6 +112,9 @@ function applyBackendMutation(action, data) {
     case "registrarGasto":
       addExpense(data);
       break;
+    case "agregarSocio":
+      addPartner(data);
+      break;
     case "invitarUsuario":
       addUserInvitation(data);
       break;
@@ -192,8 +202,11 @@ function handleLocalAction(action, payload) {
     case "registrarGasto":
       return response(true, addExpense(payload), "Gasto registrado en modo demo.");
 
+    case "agregarSocio":
+      return response(true, addPartner(payload), "Socio agregado en modo demo.");
+
     case "obtenerCatalogoGastos":
-      return response(true, EXPENSE_CATALOG);
+      return response(true, LOCAL_EXPENSE_CATALOG);
 
     case "obtenerDashboard":
       return response(true, state);
@@ -248,6 +261,7 @@ export const api = {
   createIncome: (income) => request("registrarIngreso", income),
   listExpenses: (filters = {}) => request("listarGastos", filters),
   createExpense: (expense) => request("registrarGasto", expense),
+  addPartner: (partner) => request("agregarSocio", partner),
   getExpenseCatalog: () => request("obtenerCatalogoGastos"),
   getDashboard: () => request("obtenerDashboard"),
   getHistory: () => request("obtenerHistorial"),

@@ -497,6 +497,19 @@ export function addPartner(partner) {
     utilidadPagada: 0,
     ...partner,
   };
+  [
+    "participacionLegal",
+    "participacionEconomica",
+    "participacionUtilidades",
+    "aporteComprometido",
+    "aporteRealizado",
+    "utilidadCalculada",
+    "utilidadPagada",
+  ].forEach((key) => {
+    record[key] = toNumber(record[key]);
+  });
+  record.aportePendiente = Math.max(toNumber(record.aporteComprometido) - toNumber(record.aporteRealizado), 0);
+  record.utilidadPendiente = Math.max(toNumber(record.utilidadCalculada) - toNumber(record.utilidadPagada), 0);
   state.partners.unshift(record);
   addHistory({
     modulo: "Socios",

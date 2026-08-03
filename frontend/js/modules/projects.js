@@ -30,6 +30,69 @@ const PROJECT_SUBTYPES_BY_TYPE = {
 
 const CURRENCY_OPTIONS = ["USD"];
 const BASE_PEOPLE_OPTIONS = ["Administrador general", "Propietario principal", "Todos", "Sociedad completa"];
+const INCOME_CATALOG = [
+  {
+    categoria: "Boleteria",
+    subcategorias: [
+      { nombre: "Entradas", conceptos: ["Preventa", "General", "VIP", "Mesa", "Puerta"] },
+      { nombre: "Reservas", conceptos: ["Reserva inicial", "Abono", "Saldo de reserva"] },
+    ],
+  },
+  {
+    categoria: "Auspicios",
+    subcategorias: [
+      { nombre: "Marca", conceptos: ["Auspicio principal", "Auspicio secundario", "Canje comercial"] },
+      { nombre: "Activacion", conceptos: ["Stand", "Mencion en escenario", "Presencia digital"] },
+    ],
+  },
+  {
+    categoria: "Ventas",
+    subcategorias: [
+      { nombre: "Productos", conceptos: ["Venta directa", "Merchandising", "Inventario"] },
+      { nombre: "Servicios", conceptos: ["Pauta mensual", "Comision", "Servicio operativo"] },
+    ],
+  },
+  {
+    categoria: "Aportes",
+    subcategorias: [
+      { nombre: "Socios", conceptos: ["Aporte de capital", "Aporte operativo", "Reembolso de socio"] },
+      { nombre: "Propietario", conceptos: ["Aporte propietario", "Capital inicial", "Reposicion de caja"] },
+    ],
+  },
+];
+const INCOME_STATUSES = ["Estimado", "Confirmado", "Facturado", "Cobrado parcialmente", "Cobrado", "Pendiente"];
+const EXPENSE_STATUSES = ["Estimado", "Cotizado", "Negociado", "Aprobado", "Pagado parcialmente", "Pagado", "Pendiente"];
+const EXPENSE_STAGES = ["Exploracion", "Investigacion", "Negociacion", "Planificacion", "Operacion", "Cierre"];
+const EXPENSE_CATALOG_FOR_DETAIL = [
+  {
+    categoria: "Personal",
+    subcategorias: [{ nombre: "Operacion y talento", conceptos: ["DJ", "Artista", "Seguridad", "Limpieza", "Productor", "Coordinador"] }],
+  },
+  {
+    categoria: "Produccion",
+    subcategorias: [{ nombre: "Tecnica", conceptos: ["Sonido", "Iluminacion", "Pantallas LED", "Tarima", "Generador", "Montaje"] }],
+  },
+  {
+    categoria: "Publicidad",
+    subcategorias: [{ nombre: "Marketing y ventas", conceptos: ["Meta Ads", "TikTok Ads", "Radio", "Influencers", "Diseno", "Flyers"] }],
+  },
+  {
+    categoria: "Administracion",
+    subcategorias: [{ nombre: "Soporte administrativo", conceptos: ["Legal", "Contabilidad", "Contratos", "Impuestos", "Software"] }],
+  },
+  {
+    categoria: "Logistica y viaticos",
+    subcategorias: [{ nombre: "Movilidad y viaje", conceptos: ["Combustible", "Taxi", "Hotel", "Alimentacion", "Mensajeria"] }],
+  },
+  {
+    categoria: "Otros",
+    subcategorias: [{ nombre: "Contingencias", conceptos: ["Imprevistos", "Reposicion", "Danos", "Depositos", "Garantias"] }],
+  },
+];
+const PAYMENT_METHODS = ["Transferencia", "Efectivo", "Tarjeta", "Cheque", "Pasarela de pago", "Canje", "Pendiente"];
+const COVER_OPTIONS = ["Sociedad completa", "Propietario personalmente", "Socio especifico", "Recuperable", "Descontado de utilidad"];
+const PARTNER_TYPES = ["Propietario", "Socio capitalista", "Socio operador", "Beneficiario", "Inversionista", "Invitado"];
+const PARTNER_STATUSES = ["Activo", "Invitacion pendiente", "Suspendido", "Retirado"];
 
 export function renderProjects(container) {
   const state = getState();
@@ -110,6 +173,8 @@ export function renderProjectDetail(container, projectId) {
       ${detailKpi("ROI", financials.roi, "percent")}
     </section>
 
+    ${projectOperations(project, partners, state)}
+
     <section class="detail-grid">
       <article class="card">
         <h3>Datos generales</h3>
@@ -159,6 +224,8 @@ export function renderProjectDetail(container, projectId) {
     </section>
   `;
 
+  setupProjectDetailActions(container, project);
+
   container.querySelector("#archive-project").addEventListener("click", async () => {
     const confirmed = confirm(`¿Archivar el proyecto "${project.nombre}"?`);
     if (!confirmed) return;
@@ -166,6 +233,236 @@ export function renderProjectDetail(container, projectId) {
     toast(result.message || "Proyecto archivado.");
     navigate("/proyectos");
   });
+}
+
+function projectOperations(project, partners, state) {
+  const partnerOptions = buildProjectPartnerOptions(partners);
+  const providerOptions = [
+    "Proveedor pendiente",
+    ...(state.providers || []).map((provider) => provider.nombre || provider.empresa).filter(Boolean),
+  ];
+
+  return `
+    <section class="project-workspace card">
+      <div class="section-heading project-workspace__header">
+        <div>
+          <p class="eyebrow">Operar este proyecto</p>
+          <h3>Agregar datos sin salir del detalle</h3>
+          <p>Todo lo que guardes aqui queda ligado solo a ${escapeHTML(project.nombre)}.</p>
+        </div>
+        <div class="toolbar">
+          <span class="status-pill">Proyecto fijo</span>
+          <span class="status-pill">${escapeHTML(project.estado || "Activo")}</span>
+        </div>
+      </div>
+
+      <div class="project-command-grid">
+        <form class="quick-form" id="detail-income-form">
+          <input type="hidden" name="proyectoId" value="${escapeHTML(project.id)}" />
+          <div>
+            <p class="eyebrow">Ingreso</p>
+            <h4>Registrar cobro</h4>
+          </div>
+          <label>Categoria
+            <select name="categoria" id="detail-income-category">${optionsFromCatalog(INCOME_CATALOG)}</select>
+          </label>
+          <label>Subcategoria
+            <select name="subcategoria" id="detail-income-subcategory"></select>
+          </label>
+          <label>Concepto
+            <select name="concepto" id="detail-income-concept"></select>
+          </label>
+          <label>Valor cobrado
+            <input name="valorCobrado" type="number" min="0" step="0.01" />
+          </label>
+          <label>Saldo pendiente
+            <input name="saldoPendiente" type="number" min="0" step="0.01" />
+          </label>
+          <label>Pagador
+            <select name="pagador">${renderSimpleOptions(["Cliente externo", "Ticketera", "Marca auspiciante", "Propietario principal", ...partnerOptions.map((item) => item.label)])}</select>
+          </label>
+          <label>Forma de pago
+            <select name="formaPago">${renderSimpleOptions(PAYMENT_METHODS)}</select>
+          </label>
+          <label>Estado
+            <select name="estado">${renderSimpleOptions(INCOME_STATUSES, "Cobrado")}</select>
+          </label>
+          <button class="button" type="submit">Guardar ingreso</button>
+        </form>
+
+        <form class="quick-form" id="detail-expense-form">
+          <input type="hidden" name="proyectoId" value="${escapeHTML(project.id)}" />
+          <div>
+            <p class="eyebrow">Gasto</p>
+            <h4>Registrar gasto</h4>
+          </div>
+          <label>Etapa
+            <select name="etapa">${renderSimpleOptions(EXPENSE_STAGES, "Operacion")}</select>
+          </label>
+          <label>Categoria
+            <select name="categoria" id="detail-expense-category">${optionsFromCatalog(EXPENSE_CATALOG_FOR_DETAIL)}</select>
+          </label>
+          <label>Subcategoria
+            <select name="subcategoria" id="detail-expense-subcategory"></select>
+          </label>
+          <label>Concepto
+            <select name="concepto" id="detail-expense-concept"></select>
+          </label>
+          <label>Valor pagado
+            <input name="valorPagado" type="number" min="0" step="0.01" />
+          </label>
+          <label>Saldo pendiente
+            <input name="saldoPendiente" type="number" min="0" step="0.01" />
+          </label>
+          <label>Proveedor
+            <select name="proveedor">${renderSimpleOptions(providerOptions)}</select>
+          </label>
+          <label>Quien cubre
+            <select name="quienCubre">${renderSimpleOptions(COVER_OPTIONS)}</select>
+          </label>
+          <label>Socio/responsable
+            <select name="socioId" id="detail-expense-partner">${renderPartnerOptions(partnerOptions)}</select>
+          </label>
+          <label>Forma de pago
+            <select name="formaPago">${renderSimpleOptions(PAYMENT_METHODS)}</select>
+          </label>
+          <label>Estado
+            <select name="estado">${renderSimpleOptions(EXPENSE_STATUSES, "Pagado")}</select>
+          </label>
+          <button class="button" type="submit">Guardar gasto</button>
+        </form>
+
+        <form class="quick-form" id="detail-partner-form">
+          <input type="hidden" name="proyectoId" value="${escapeHTML(project.id)}" />
+          <div>
+            <p class="eyebrow">Socio</p>
+            <h4>Agregar socio</h4>
+          </div>
+          <label>Nombre
+            <input name="nombre" required placeholder="Nombre del socio" />
+          </label>
+          <label>Correo
+            <input name="correo" type="email" placeholder="correo del socio" />
+          </label>
+          <label>Tipo
+            <select name="tipoSocio">${renderSimpleOptions(PARTNER_TYPES, "Socio capitalista")}</select>
+          </label>
+          <label>Legal %
+            <input name="participacionLegal" type="number" min="0" max="100" step="0.01" />
+          </label>
+          <label>Economica %
+            <input name="participacionEconomica" type="number" min="0" max="100" step="0.01" />
+          </label>
+          <label>Utilidades %
+            <input name="participacionUtilidades" type="number" min="0" max="100" step="0.01" />
+          </label>
+          <label>Aporte realizado
+            <input name="aporteRealizado" type="number" min="0" step="0.01" />
+          </label>
+          <label>Estado
+            <select name="estado">${renderSimpleOptions(PARTNER_STATUSES, "Activo")}</select>
+          </label>
+          <button class="button" type="submit">Guardar socio</button>
+        </form>
+      </div>
+    </section>
+  `;
+}
+
+function setupProjectDetailActions(container, project) {
+  setupCatalogSelects({
+    category: container.querySelector("#detail-income-category"),
+    subcategory: container.querySelector("#detail-income-subcategory"),
+    concept: container.querySelector("#detail-income-concept"),
+    catalog: INCOME_CATALOG,
+  });
+  setupCatalogSelects({
+    category: container.querySelector("#detail-expense-category"),
+    subcategory: container.querySelector("#detail-expense-subcategory"),
+    concept: container.querySelector("#detail-expense-concept"),
+    catalog: EXPENSE_CATALOG_FOR_DETAIL,
+  });
+
+  container.querySelector("#detail-income-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const data = getFormData(event.currentTarget);
+    const result = await api.createIncome(data);
+    if (!result.ok) {
+      toast(result.message || "No fue posible guardar el ingreso.", "error");
+      return;
+    }
+    toast(result.message || "Ingreso guardado en el proyecto.");
+    renderProjectDetail(container, project.id);
+  });
+
+  container.querySelector("#detail-expense-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const data = getFormData(event.currentTarget);
+    const partnerSelect = event.currentTarget.querySelector("#detail-expense-partner");
+    data.socioNombre = partnerSelect?.selectedOptions?.[0]?.textContent?.trim() || "";
+    const result = await api.createExpense(data);
+    if (!result.ok) {
+      toast(result.message || "No fue posible guardar el gasto.", "error");
+      return;
+    }
+    toast(result.message || "Gasto guardado en el proyecto.");
+    renderProjectDetail(container, project.id);
+  });
+
+  container.querySelector("#detail-partner-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const data = getFormData(event.currentTarget);
+    const result = await api.addPartner(data);
+    if (!result.ok) {
+      toast(result.message || "No fue posible guardar el socio.", "error");
+      return;
+    }
+    toast(result.message || "Socio guardado en el proyecto.");
+    renderProjectDetail(container, project.id);
+  });
+}
+
+function setupCatalogSelects({ category, subcategory, concept, catalog }) {
+  const renderConcepts = () => {
+    const selectedCategory = catalog.find((item) => item.categoria === category.value) || catalog[0];
+    const selectedSubcategory = selectedCategory.subcategorias.find((item) => item.nombre === subcategory.value) || selectedCategory.subcategorias[0];
+    concept.innerHTML = selectedSubcategory.conceptos.map((item) => `<option>${escapeHTML(item)}</option>`).join("");
+  };
+
+  const renderSubcategories = () => {
+    const selectedCategory = catalog.find((item) => item.categoria === category.value) || catalog[0];
+    subcategory.innerHTML = selectedCategory.subcategorias.map((item) => `<option>${escapeHTML(item.nombre)}</option>`).join("");
+    renderConcepts();
+  };
+
+  category.addEventListener("change", renderSubcategories);
+  subcategory.addEventListener("change", renderConcepts);
+  renderSubcategories();
+}
+
+function optionsFromCatalog(catalog) {
+  return catalog.map((item) => `<option>${escapeHTML(item.categoria)}</option>`).join("");
+}
+
+function renderSimpleOptions(options, selected = options[0]) {
+  return [...new Set(options.filter(Boolean))]
+    .map((option) => `<option ${option === selected ? "selected" : ""}>${escapeHTML(option)}</option>`)
+    .join("");
+}
+
+function buildProjectPartnerOptions(partners) {
+  return [
+    { value: "Sociedad completa", label: "Sociedad completa" },
+    { value: "Administrador general", label: "Administrador general" },
+    { value: "Propietario principal", label: "Propietario principal" },
+    ...partners.map((partner) => ({ value: partner.id, label: partner.nombre })).filter((item) => item.label),
+  ];
+}
+
+function renderPartnerOptions(options) {
+  return options
+    .map((option) => `<option value="${escapeHTML(option.value)}">${escapeHTML(option.label)}</option>`)
+    .join("");
 }
 
 function attachProjectCardEvents(container) {
