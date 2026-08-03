@@ -82,7 +82,7 @@ async function renderUsersAsync(container) {
   container.innerHTML = `
     <section class="section-heading">
       <div>
-        <p class="eyebrow">Fase 2 activa</p>
+        <p class="eyebrow">Acceso privado activo</p>
         <h2>Usuarios, socios y permisos</h2>
         <p>El administrador general invita socios por proyecto. Cada socio activa su acceso con codigo privado y clave propia.</p>
       </div>

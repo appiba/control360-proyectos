@@ -105,7 +105,7 @@ export function renderLoginScreen(api, onAuthenticated) {
             </label>
             <label>Clave
               <span class="password-field">
-                <input id="password-input" name="password" type="password" autocomplete="current-password" inputmode="numeric" required placeholder="Clave privada" />
+                <input id="password-input" name="password" type="password" autocomplete="current-password" inputmode="numeric" pattern="[0-9]*" required placeholder="Clave privada" />
                 <button class="password-toggle" id="password-toggle" type="button" aria-label="Mostrar clave" aria-pressed="false">&#128065;</button>
               </span>
             </label>
@@ -160,6 +160,14 @@ export function renderLoginScreen(api, onAuthenticated) {
     passwordToggle.setAttribute("aria-pressed", String(!showing));
   });
 
+  passwordInput.addEventListener("input", () => {
+    const onlyNumbers = passwordInput.value.replace(/\D/g, "");
+    if (passwordInput.value !== onlyNumbers) {
+      passwordInput.value = onlyNumbers;
+      message.textContent = "La clave del administrador solo acepta numeros.";
+    }
+  });
+
   invitationPasswordToggle.addEventListener("click", () => {
     const showing = invitationPasswordInput.type === "text";
     invitationPasswordInput.type = showing ? "password" : "text";
@@ -192,17 +200,24 @@ export function renderLoginScreen(api, onAuthenticated) {
     const submitButton = form.querySelector("button[type='submit']");
     const formData = Object.fromEntries(new FormData(form).entries());
     const correo = String(formData.correo || "").trim();
-    const password = normalizePassword(formData.password);
+    const ownerEmail = await emailMatchesOwner(correo);
+    const password = ownerEmail
+      ? normalizeOwnerPassword(formData.password)
+      : normalizePassword(formData.password);
 
     submitButton.disabled = true;
     submitButton.textContent = "...";
     message.textContent = "";
 
-    const ownerEmail = await emailMatchesOwner(correo);
-    if (ownerEmail && /[^\d]/.test(password)) {
+    if (ownerEmail) {
+      const localOwnerSession = await createLocalOwnerSession(correo, password);
       submitButton.disabled = false;
       submitButton.textContent = "Login";
-      message.textContent = "La clave del administrador solo debe tener numeros. Revisa que no tenga letras al final.";
+      if (localOwnerSession) {
+        openSession(localOwnerSession, modalRoot, onAuthenticated);
+        return;
+      }
+      message.textContent = "Clave de administrador incorrecta. Escribe solo los numeros, sin letras ni espacios.";
       return;
     }
 
@@ -221,23 +236,9 @@ export function renderLoginScreen(api, onAuthenticated) {
       }
     }
 
-    const localOwnerSession = await createLocalOwnerSession(correo, password);
-
     submitButton.disabled = false;
     submitButton.textContent = "Login";
-
-    if (localOwnerSession) {
-      openSession({
-        ...localOwnerSession,
-        backendFallback: isBackendConfigured(),
-        backendMessage: result?.message || "",
-      }, modalRoot, onAuthenticated);
-      return;
-    }
-
-    message.textContent = ownerEmail
-      ? "No se pudo abrir la sesion. Revisa la clave exacta del administrador."
-      : result?.ok
+    message.textContent = result?.ok
         ? "Apps Script respondio, pero no entrego una sesion valida."
         : result?.message || "Correo o clave incorrectos.";
   });
@@ -365,6 +366,10 @@ function normalizeEmail(value) {
 
 function normalizePassword(value) {
   return String(value || "").trim();
+}
+
+function normalizeOwnerPassword(value) {
+  return String(value || "").replace(/\D/g, "");
 }
 
 function getInviteFromLocation() {
