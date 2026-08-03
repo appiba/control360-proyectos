@@ -1,16 +1,16 @@
-import { api, isBackendConfigured } from "./api.js?v=phase2-users-local-v1-20260727";
+import { api, isBackendConfigured } from "./api.js?v=phase2-login-clear-v3-20260803";
 import {
   clearSession,
   ensureAuthenticated,
   getSession,
   renderLoginScreen,
   updateSessionBadge,
-} from "./auth.js?v=phase2-users-local-v1-20260727";
+} from "./auth.js?v=phase2-login-clear-v3-20260803";
 import { exportCurrentView } from "./reports.js";
 import { getCurrentPath, refreshRoute, registerRoute, startRouter } from "./router.js";
 import { getState, setState, subscribe } from "./state.js";
 import { toast } from "./utils.js";
-import { renderDashboard } from "./modules/dashboard.js?v=phase2-users-local-v1-20260727";
+import { renderDashboard } from "./modules/dashboard.js?v=phase2-login-clear-v3-20260803";
 import { renderProjects, renderProjectDetail } from "./modules/projects.js";
 import { renderEvents } from "./modules/events.js";
 import { renderBusinesses } from "./modules/businesses.js";

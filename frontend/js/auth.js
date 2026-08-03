@@ -198,6 +198,14 @@ export function renderLoginScreen(api, onAuthenticated) {
     submitButton.textContent = "...";
     message.textContent = "";
 
+    const ownerEmail = await emailMatchesOwner(correo);
+    if (ownerEmail && /[^\d]/.test(password)) {
+      submitButton.disabled = false;
+      submitButton.textContent = "Login";
+      message.textContent = "La clave del administrador solo debe tener numeros. Revisa que no tenga letras al final.";
+      return;
+    }
+
     let result = null;
     if (isBackendConfigured()) {
       result = await api.login({ correo, password });
@@ -227,7 +235,11 @@ export function renderLoginScreen(api, onAuthenticated) {
       return;
     }
 
-    message.textContent = result?.message || "Correo o clave incorrectos.";
+    message.textContent = ownerEmail
+      ? "No se pudo abrir la sesion. Revisa la clave exacta del administrador."
+      : result?.ok
+        ? "Apps Script respondio, pero no entrego una sesion valida."
+        : result?.message || "Correo o clave incorrectos.";
   });
 
   invitationForm.addEventListener("submit", async (event) => {
@@ -317,11 +329,16 @@ async function createLocalOwnerSession(correo, password) {
 async function credentialsMatchOwner(correo, password) {
   if (!window.crypto?.subtle || !correo || !password) return false;
 
-  const emailHash = await sha256Base64(normalizeEmail(correo));
-  if (!constantTimeEquals(emailHash, OWNER_EMAIL_HASH)) return false;
+  if (!await emailMatchesOwner(correo)) return false;
 
   const passwordHash = await hashOwnerPassword(password);
   return constantTimeEquals(passwordHash, OWNER_PASSWORD_HASH);
+}
+
+async function emailMatchesOwner(correo) {
+  if (!window.crypto?.subtle || !correo) return false;
+  const emailHash = await sha256Base64(normalizeEmail(correo));
+  return constantTimeEquals(emailHash, OWNER_EMAIL_HASH);
 }
 
 async function hashOwnerPassword(password) {
